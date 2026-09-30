@@ -29,10 +29,8 @@ $sharedOut = Join-Path $OutDir "shared"
 New-Item $sharedOut -ItemType Directory | Out-Null
 Copy-Item (Join-Path $RepoRoot "web\shared\style.css") $sharedOut
 Copy-Item (Join-Path $RepoRoot "web\shared\portal-link.js") $sharedOut
-
-@"
-/join  /join.html  301
-"@ | Set-Content -Path (Join-Path $OutDir "_redirects") -Encoding ascii
+# No _redirects: Cloudflare pretty-URLs already map /join -> join.html.
+# /join -> /join.html 301 plus that rewrite is ERR_TOO_MANY_REDIRECTS.
 
 Write-Host "Staged $OutDir"
 Write-Host "  index.html join.html + legal + shared/ (no API, no owners, no explorer)"
