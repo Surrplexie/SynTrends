@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: syntrends
+      POSTGRES_PASSWORD: syntrends
+      POSTGRES_DB: syntrends
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U syntrends"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      DATABASE_URL: postgresql://syntrends:syntrends@db:5432/syntrends
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

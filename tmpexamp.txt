@@ -1,0 +1,314 @@
+{
+
+"data": {
+"type": "event",
+"id": "evt_AMLFxMK3BQsKudjSg96Ttiig6kZKGq",
+
+"attributes": {
+"name": "inquiry.completed",
+
+"payload": {
+
+"data": {
+"type": "inquiry",
+"id": "inq_AMLFxMKF8jU8jD7rCAHkRxgSAyUoV7",
+
+"attributes": {
+"status": "completed",
+"reference-id": "owner_99165922331a4e7e",
+"note": null,
+
+"behaviors": {
+"api-version-less-than-minimum-count": 0,
+"autofill-cancels": 2,
+"autofill-starts": 3,
+"behavior-threat-level": "low",
+"bot-score": 30,
+"client-type-spoof-attempts": 0,
+"completion-time": 79.296008543,
+"debugger-attached": false,
+"devtools-open": false,
+"distraction-events": 3,
+"hesitation-baseline": 71394,
+"hesitation-count": 9,
+"hesitation-percentage": 76.87480740678488,
+"hesitation-time": 54884,
+"mobile-sdk-version-less-than-minimum-count": 0,
+"request-spoof-attempts": 0,
+"shortcut-copies": 0,
+"shortcut-pastes": 0,
+"user-agent-spoof-attempts": 0
+},
+"tags": [],
+"creator": "API",
+"reviewer-comment": null,
+"updated-at": "2026-09-30T20:18:09.000Z",
+"created-at": "2026-09-30T20:16:50.000Z",
+"started-at": "2026-09-30T20:17:44.000Z",
+"expires-at": null,
+"completed-at": "2026-09-30T20:18:08.000Z",
+"failed-at": null,
+"marked-for-review-at": null,
+"decisioned-at": null,
+"expired-at": null,
+"redacted-at": null,
+"previous-step-name": "selfie_a084fd_verification",
+"next-step-name": "success_8b8ab0",
+
+"fields": {
+
+"crypto_wallet_address": {
+"type": "string",
+"value": "0x000000000000000000000000000000000000dEaD"
+},
+
+"current_government_id": {
+"type": "government_id",
+
+"value": {
+"id": "doc_AMLFxMKdztfa1L1jJMLLe4MpWkReHM",
+"type": "Document::GovernmentId"
+}
+},
+
+"selected_country_code": {
+"type": "string",
+"value": "US"
+},
+
+"selected_id_class": {
+"type": "string",
+"value": "dl"
+},
+
+"address_street_1": {
+"type": "string",
+"value": "600 CALIFORNIA STREET"
+},
+
+"address_street_2": {
+"type": "string",
+"value": null
+},
+
+"address_city": {
+"type": "string",
+"value": "SAN FRANCISCO"
+},
+
+"address_subdivision": {
+"type": "string",
+"value": "CA"
+},
+
+"address_postal_code": {
+"type": "string",
+"value": "94109"
+},
+
+"address_country_code": {
+"type": "string",
+"value": "US"
+},
+
+"birthdate": {
+"type": "date",
+"value": "1977-07-17"
+},
+
+"expiration_date": {
+"type": "date",
+"value": "2031-09-30"
+},
+
+"email_address": {
+"type": "string",
+"value": "test@gmail.com"
+},
+
+"identification_class": {
+"type": "string",
+"value": "dl"
+},
+
+"identification_number": {
+"type": "string",
+"value": "I1234562"
+},
+
+"hashed_identification_number": {
+"type": "string",
+"value": null
+},
+
+"name_first": {
+"type": "string",
+"value": "ALEXANDER J"
+},
+
+"name_middle": {
+"type": "string",
+"value": null
+},
+
+"name_last": {
+"type": "string",
+"value": "SAMPLE"
+},
+
+"nationality": {
+"type": "string",
+"value": null
+},
+
+"phone_number": {
+"type": "string",
+"value": null
+},
+
+"card_access_number": {
+"type": "string",
+"value": null
+},
+
+"issue_date": {
+"type": "date",
+"value": "2025-09-30"
+},
+
+"issuing_authority": {
+"type": "string",
+"value": "CA"
+},
+
+"government_identification_number_map": {
+"type": "json",
+"value": null
+},
+
+"current_selfie": {
+"type": "selfie",
+
+"value": {
+"id": "self_AMLFxMKktFV59pBFG2rsSt2jW9N6d5",
+"type": "Selfie::ProfileAndCenter"
+}
+}
+}
+},
+
+"relationships": {
+
+"account": {
+
+"data": {
+"type": "account",
+"id": "act_AMLFxMKVzobeHqFER6ao15nL5cNddj"
+}
+},
+
+"template": {
+"data": null
+},
+
+"inquiry-template": {
+
+"data": {
+"type": "inquiry-template",
+"id": "itmpl_AMLFxMKALWF2efYHgBsiUNKyV8g1mh"
+}
+},
+
+"inquiry-template-version": {
+
+"data": {
+"type": "inquiry-template-version",
+"id": "itmplv_AMLFxMKYn67gzEVcf2w9xkDAeY56gX"
+}
+},
+
+"transaction": {
+"data": null
+},
+
+"reviewer": {
+"data": null
+},
+
+"reports": {
+
+"data": [
+
+{
+"type": "report/crypto-address-watchlist",
+"id": "rep_AMLFxMK7SqpUZG3xudGkXTGRt3XQC7"
+}
+]
+},
+
+"verifications": {
+
+"data": [
+
+{
+"type": "verification/government-id",
+"id": "ver_AMLFxMKcFgWqEp5pACiwj8nZiLQgoa"
+},
+
+{
+"type": "verification/selfie",
+"id": "ver_AMLFxMKHgegeQYQTHTX2cwDLjcmJGX"
+}
+]
+},
+
+"sessions": {
+
+"data": [
+
+{
+"type": "inquiry-session",
+"id": "iqse_AMLFxMKMj6TXSowkFjVA9PqutZUK5n"
+},
+
+{
+"type": "inquiry-session",
+"id": "iqse_AMLFxMKkY38DyBjvuLUxUhLxKTQjFe"
+},
+
+{
+"type": "inquiry-session",
+"id": "iqse_AMLFxMK4SntDbYx7fnitCEZuHFr7ZY"
+}
+]
+},
+
+"documents": {
+
+"data": [
+
+{
+"type": "document/government-id",
+"id": "doc_AMLFxMKdztfa1L1jJMLLe4MpWkReHM"
+}
+]
+},
+
+"selfies": {
+
+"data": [
+
+{
+"type": "selfie/profile-and-center",
+"id": "self_AMLFxMKktFV59pBFG2rsSt2jW9N6d5"
+}
+]
+}
+}
+}
+},
+"created-at": "2026-09-30T20:18:09.627Z",
+"context": {}
+}
+}
+}

@@ -1,0 +1,61 @@
+# SynTrends public testnet on Fly.io — always-on through public beta (Nov 1).
+#
+# Deploy:  fly deploy -c deploy/fly.testnet.toml
+# Operate: scripts/fly_testnet.ps1 (Windows) or scripts/fly_testnet.sh (Unix)
+# Docs:    docs/FLY_TESTNET.md , docs/PUBLIC_BETA.md , docs/PUBLIC_LAUNCH.md
+# Park is an emergency cost switch (scripts/fly_testnet.* park confirm), not default.
+#
+# Public beta KYC (Phase K/N): set Fly secrets — do NOT commit Persona credentials.
+#   fly secrets set KYC_PROVIDER=persona \
+#     PERSONA_API_KEY=... PERSONA_WEBHOOK_SECRET=... PERSONA_TEMPLATE_ID=... \
+#     PERSONA_ENVIRONMENT=sandbox -a syntrends-testnet
+#   fly secrets set CORS_ORIGINS="https://syntrends.com,...,https://testnet.syntrends.com,https://syntrends-testnet.fly.dev" \
+#     -a syntrends-testnet
+# Webhook URL in Persona dashboard (primary):
+#   https://testnet.syntrends.com/owners/api/kyc/webhook
+# Fallback webhook:
+#   https://syntrends-testnet.fly.dev/owners/api/kyc/webhook
+# Cutover helper: scripts/public_launch.ps1 print-cutover
+# Demo KYC approve is DISABLED on public testnet (no ALLOW_DEMO_KYC_APPROVE).
+
+app = 'syntrends-testnet'
+primary_region = 'iad'
+
+[build]
+  dockerfile = '../Dockerfile'
+
+[env]
+  FAUCET_AMOUNT = '5000'
+  FAUCET_COOLDOWN_SECONDS = '3600'
+  FAUCET_ENABLED = '1'
+  HOST = '0.0.0.0'
+  # Overridden by fly secrets when Persona is configured for public beta.
+  KYC_PROVIDER = 'demo'
+  NETWORK_NAME = 'syntrends-testnet-1'
+  PORT = '8090'
+  REQUIRE_REAL_KYC_ON_TESTNET = '1'
+  SYNTRENDS_ENV = 'testnet'
+
+# Keep one machine running. Cold starts are not acceptable for a public join door.
+[http_service]
+  internal_port = 8090
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = 'requests'
+    hard_limit = 250
+    soft_limit = 200
+
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '3s'
+    grace_period = '120s'
+    method = 'GET'
+    path = '/health'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '512mb'

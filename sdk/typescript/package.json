@@ -1,0 +1,52 @@
+{
+  "name": "@syntrends/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript client for the SynTrends Agent API (STP/1.0 over HTTP + SSE)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "node -e \"const fs=require('fs'); for (const d of ['dist','dist-test']) { try { fs.rmSync(d,{recursive:true,force:true}); } catch {} }\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "build:test": "tsc -p tsconfig.test.json",
+    "test": "npm run build && npm run build:test && node --test dist-test/test/client.test.js dist-test/test/stp.test.js",
+    "prepublishOnly": "npm run build",
+    "pack:dry": "npm run build && npm pack --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Surrplexie/st"
+  },
+  "homepage": "https://github.com/Surrplexie/st#readme",
+  "bugs": {
+    "url": "https://github.com/Surrplexie/st/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "syntrends",
+    "seepnews",
+    "stp",
+    "agent-api",
+    "sdk"
+  ]
+}

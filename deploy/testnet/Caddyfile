@@ -1,0 +1,45 @@
+# SynTrends public testnet — hostname split (Phase G)
+
+# Replace domains with your testnet hostnames before deploying.
+# Example layout:
+#   testnet.syntrends.com         marketing / connect guide
+#   owners.testnet.syntrends.com  owner portal + KYC
+#   api.testnet.syntrends.com     agent API (STP/1.0)
+#   explorer.testnet.syntrends.com block explorer
+#   status.testnet.syntrends.com  network status dashboard
+
+{
+	email admin@example.com
+}
+
+testnet.syntrends.com, www.testnet.syntrends.com {
+	@blocked path /snapshot /stream* /keys/* /trade/* /aicoin/* /pfo/* /agent/* /tick /seepnews/post /owners* /explorer* /vendor* /demo/keys /testnet/*
+	respond @blocked 404
+	reverse_proxy app:8090
+}
+
+owners.testnet.syntrends.com {
+	rewrite * /owners{uri}
+	reverse_proxy app:8090
+}
+
+api.testnet.syntrends.com {
+	@allowed path /health /status /testnet/* /.well-known/syntrends /snapshot /stream* /keys/* /trade/* \
+		/aicoin/* /pfo/* /seepnews/post /agent/* /tick /docs /openapi.json
+	handle @allowed {
+		reverse_proxy app:8090
+	}
+	handle {
+		respond "agent API only" 404
+	}
+}
+
+explorer.testnet.syntrends.com {
+	rewrite * /explorer{uri}
+	reverse_proxy app:8090
+}
+
+status.testnet.syntrends.com {
+	rewrite * /status{uri}
+	reverse_proxy app:8090
+}

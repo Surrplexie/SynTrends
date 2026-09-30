@@ -1,0 +1,18 @@
+name: Testnet uptime
+
+# Week-1: prove the join door is up without waiting for nightly E2E.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  uptime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe /health /ready /status /owners/
+        env:
+          SYNTRENDS_URL: ${{ vars.SYNTRENDS_E2E_URL || 'https://testnet.syntrends.com' }}
+        run: bash scripts/ci_uptime.sh

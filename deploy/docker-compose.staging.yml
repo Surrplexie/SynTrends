@@ -1,0 +1,68 @@
+# SynTrends staging deployment: Postgres + app + Caddy reverse proxy with
+# real hostnames and automatic TLS. Run from the repo root:
+#
+#   docker compose -f deploy/docker-compose.staging.yml --env-file deploy/.env up -d --build
+#
+# Prerequisites:
+#   1. DNS A/AAAA records for syntrends.com, seepnews.com, owners.syntrends.com,
+#      api.syntrends.com, explorer.syntrends.com, vendor.syntrends.com all
+#      pointing at this host's public IP.
+#   2. Ports 80 and 443 open to the internet (Caddy needs both for ACME).
+#   3. deploy/.env populated from deploy/.env.example.
+#
+# For a quick single-host staging demo without a custom domain, use the
+# repo-root docker-compose.yml instead (port 8090, no TLS/hostname split).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: syntrends
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-syntrends}
+      POSTGRES_DB: syntrends
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U syntrends"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://syntrends:${POSTGRES_PASSWORD:-syntrends}@db:5432/syntrends
+      SYNTRENDS_ENV: ${SYNTRENDS_ENV:-staging}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://syntrends.com,https://seepnews.com,https://owners.syntrends.com}
+      KYC_PROVIDER: ${KYC_PROVIDER:-demo}
+      PERSONA_API_KEY: ${PERSONA_API_KEY:-}
+      PERSONA_WEBHOOK_SECRET: ${PERSONA_WEBHOOK_SECRET:-}
+      PERSONA_TEMPLATE_ID: ${PERSONA_TEMPLATE_ID:-}
+      PERSONA_ENVIRONMENT: ${PERSONA_ENVIRONMENT:-sandbox}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8090"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

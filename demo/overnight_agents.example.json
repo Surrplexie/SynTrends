@@ -1,0 +1,20 @@
+[
+  {
+    "agent_id": "xyz",
+    "api_key": "st_agent_REPLACE_ME",
+    "interval": 90,
+    "sell_after_buys": 8
+  },
+  {
+    "agent_id": "bot-alpha",
+    "api_key": "st_agent_REPLACE_ME",
+    "interval": 95,
+    "sell_after_buys": 6
+  },
+  {
+    "agent_id": "bot-beta",
+    "api_key": "st_agent_REPLACE_ME",
+    "interval": 100,
+    "sell_after_buys": 10
+  }
+]

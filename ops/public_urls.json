@@ -1,0 +1,33 @@
+{
+  "phase": "N",
+  "description": "Canonical public launch URLs for SynTrends public testnet (simulated fiat). Update DNS/CORS/Persona to match.",
+  "marketing": {
+    "syntrends": "https://syntrends.com",
+    "seepnews": "https://seepnews.com",
+    "join": "https://syntrends.com/join.html"
+  },
+  "public_testnet": {
+    "primary": "https://testnet.syntrends.com",
+    "fallback": "https://syntrends-testnet.fly.dev",
+    "owners": "https://testnet.syntrends.com/owners/",
+    "status": "https://testnet.syntrends.com/status/",
+    "explorer": "https://testnet.syntrends.com/explorer/",
+    "join_on_app": "https://testnet.syntrends.com/join.html",
+    "persona_webhook": "https://testnet.syntrends.com/owners/api/kyc/webhook",
+    "agent_api_base": "https://testnet.syntrends.com",
+    "well_known": "https://testnet.syntrends.com/.well-known/syntrends"
+  },
+  "cors_origins_csv": "https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://syntrends-testnet.fly.dev",
+  "fly_app": "syntrends-testnet",
+  "packages": {
+    "pypi": "syntrends",
+    "npm": "@syntrends/sdk",
+    "version": "0.1.0"
+  },
+  "notes": [
+    "Phase N uses a single Fly origin behind testnet.syntrends.com (path-based owners/api).",
+    "Hostname split (api.testnet.syntrends.com) remains the Docker+Caddy path in docs/TESTNET.md.",
+    "Keep fly.dev as fallback until DNS/certs are verified.",
+    "Week-1 policy: always-on Fly (min_machines_running=1). Park is emergency-only."
+  ]
+}

@@ -1,0 +1,281 @@
+/* SynTrends marketing landing — promotional surface only.
+   Other pages keep /shared/style.css. */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Syne:wght@600;700;800&display=swap");
+
+:root {
+  --ink: #0a1210;
+  --ink-2: #10201a;
+  --fog: #c8d4cc;
+  --fog-dim: #8a9a90;
+  --signal: #3dcea0;
+  --signal-deep: #1f8f6a;
+  --line: rgba(200, 212, 204, 0.14);
+  --paper: #e8f0ea;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body.ad {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  background: var(--ink);
+  color: var(--fog);
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+a { color: var(--signal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.ad-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ad-nav .mark {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.ad-nav nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.15rem;
+}
+
+.ad-nav nav a {
+  color: var(--fog-dim);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.ad-nav nav a:hover { color: var(--paper); }
+
+/* --- Hero: one composition --- */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  align-items: end;
+  padding: 6.5rem 1.5rem 3.5rem;
+  isolation: isolate;
+}
+
+.hero-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 70% 20%, rgba(61, 206, 160, 0.22), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 15% 80%, rgba(31, 143, 106, 0.18), transparent 50%),
+    linear-gradient(165deg, #07110e 0%, #0d1c16 45%, #0a1411 100%);
+  overflow: hidden;
+}
+
+.hero-visual svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 40rem;
+  animation: rise 0.9s ease-out both;
+}
+
+.hero-brand {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.2rem, 12vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  margin: 0 0 1.25rem;
+  animation: rise 0.9s ease-out 0.08s both;
+}
+
+.hero-line {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3.5vw, 2rem);
+  line-height: 1.2;
+  color: var(--paper);
+  margin: 0 0 0.85rem;
+  max-width: 18ch;
+}
+
+.hero-sub {
+  margin: 0 0 1.75rem;
+  color: var(--fog-dim);
+  font-size: 1.05rem;
+  max-width: 34ch;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+
+.btn {
+  display: inline-block;
+  font-family: "Sora", sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+
+.btn-primary {
+  background: var(--signal);
+  color: #062018;
+}
+
+.btn-primary:hover { background: #5fe0b4; color: #062018; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.btn-ghost:hover {
+  border-color: var(--fog-dim);
+  color: var(--paper);
+}
+
+/* --- Sections: one job each --- */
+.band {
+  padding: 4.5rem 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.band-inner {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.band h2 {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: var(--paper);
+  margin: 0 0 0.85rem;
+  letter-spacing: -0.02em;
+}
+
+.band p {
+  margin: 0;
+  color: var(--fog-dim);
+  font-size: 1.05rem;
+  max-width: 36rem;
+}
+
+.band-signal {
+  background:
+    linear-gradient(180deg, rgba(61, 206, 160, 0.06), transparent 40%),
+    var(--ink-2);
+}
+
+.feature-list {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.feature-list li {
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--line);
+  animation: rise 0.7s ease-out both;
+}
+
+.feature-list li:nth-child(1) { animation-delay: 0.05s; }
+.feature-list li:nth-child(2) { animation-delay: 0.12s; }
+.feature-list li:nth-child(3) { animation-delay: 0.19s; }
+.feature-list li:nth-child(4) { animation-delay: 0.26s; }
+.feature-list li:nth-child(5) { animation-delay: 0.33s; }
+
+.feature-list strong {
+  display: block;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--paper);
+  margin-bottom: 0.35rem;
+}
+
+.feature-list span {
+  color: var(--fog-dim);
+  font-size: 0.98rem;
+}
+
+.closing {
+  text-align: left;
+}
+
+.closing .cta-row { margin-top: 1.5rem; }
+
+.ad-foot {
+  border-top: 1px solid var(--line);
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--fog-dim);
+  font-size: 0.8rem;
+}
+
+.ad-foot a { color: var(--fog-dim); }
+.ad-foot a:hover { color: var(--signal); }
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-2%, 1.5%, 0) scale(1.04); }
+}
+
+.hero-visual .mesh {
+  animation: drift 18s ease-in-out alternate infinite;
+  transform-origin: center;
+}
+
+@media (max-width: 640px) {
+  .hero { align-items: end; padding-bottom: 2.5rem; }
+  .ad-nav nav { gap: 0.65rem 0.9rem; }
+}

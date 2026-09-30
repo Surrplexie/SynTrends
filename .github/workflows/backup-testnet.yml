@@ -1,0 +1,42 @@
+name: Testnet snapshot backup
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Need FLY_API_TOKEN
+        id: tok
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "FLY_API_TOKEN missing — skip snapshot backup"
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: steps.tok.outputs.has_token == 'true'
+      - name: Export snapshot from Fly app
+        if: steps.tok.outputs.has_token == 'true'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          flyctl ssh console -a syntrends-testnet --pty=false \
+            -C "python scripts/backup_snapshot.py export -o /tmp/st-snap.json"
+          flyctl ssh sftp get /tmp/st-snap.json snapshot.json -a syntrends-testnet
+          python -c "import json; d=json.load(open('snapshot.json')); assert d.get('format','').startswith('syntrends-app-snapshot'); print(d.get('meta'))"
+      - uses: actions/upload-artifact@v4
+        if: steps.tok.outputs.has_token == 'true'
+        with:
+          name: testnet-snapshot
+          path: snapshot.json
+          retention-days: 14

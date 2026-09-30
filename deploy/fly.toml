@@ -1,0 +1,51 @@
+# Fly.io deployment (alternative to the Caddy/VPS path in docker-compose.staging.yml).
+#
+#   fly launch --no-deploy --copy-config --name syntrends-staging
+#   fly postgres create --name syntrends-staging-db
+#   fly postgres attach syntrends-staging-db -a syntrends-staging   # sets DATABASE_URL
+#   fly secrets set SYNTRENDS_ENV=staging KYC_PROVIDER=demo \
+#     CORS_ORIGINS=https://syntrends.com,https://seepnews.com,https://owners.syntrends.com
+#   fly deploy --config deploy/fly.toml
+#
+# Fly's edge terminates TLS per custom domain but doesn't do Caddy-style
+# path-based hostname separation — every fly.dev/custom-domain hostname
+# reaches the same app process on the same routes. Add all five hostnames
+# as Fly custom domains (`fly certs add api.syntrends.com`, etc.) for
+# multi-domain TLS; the *behavioral* hostname split (blocking API paths on
+# the marketing domain) only happens with the Caddy path — prefer that for
+# a real production hostname split, use Fly for a fast single-command demo.
+
+app = "syntrends-staging"
+primary_region = "iad"
+
+[build]
+  dockerfile = "../Dockerfile"
+
+[env]
+  SYNTRENDS_ENV = "staging"
+  PORT = "8090"
+  HOST = "0.0.0.0"
+
+[[services]]
+  internal_port = 8090
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "10s"
+
+[[services.http_checks]]
+  path = "/health"
+  interval = "15s"
+  timeout = "2s"
+  grace_period = "10s"

@@ -1,0 +1,67 @@
+# SynTrends staging/production reverse proxy — enforces the hostname split
+# documented in docs/WEB_PRESENCE.md at the edge, not just by convention:
+#
+#   syntrends.com / seepnews.com   -> human onboarding only (no agent writes)
+#   owners.syntrends.com           -> owner portal JSON API + static UI
+#   api.syntrends.com              -> agent API only (STP/1.0, SSE)
+#   explorer.syntrends.com         -> block explorer (read-only)
+#   vendor.syntrends.com           -> licensed HUD reference (read-only)
+#
+# All five hostnames proxy to the SAME upstream app (one Postgres-backed
+# process) — the split is presentation/routing, not separate deployments.
+# Replace the domains below with your own before deploying, and point DNS
+# A/AAAA records at this host. Caddy issues Let's Encrypt certificates for
+# every hostname listed automatically.
+
+{
+	email admin@example.com
+}
+
+# -- Marketing sites (human onboarding only) ---------------------------------
+
+syntrends.com, www.syntrends.com {
+	@blocked_other path /snapshot /stream* /keys/* /trade/* /aicoin/* /pfo/* /agent/* /tick /seepnews/post /owners* /explorer* /vendor* /demo/keys
+	respond @blocked_other 404
+
+	reverse_proxy app:8090
+}
+
+seepnews.com, www.seepnews.com {
+	@blocked_other path /snapshot /stream* /keys/* /trade/* /aicoin/* /pfo/* /agent/* /tick /owners* /explorer* /vendor* /demo/keys
+
+	respond @blocked_other 404
+	rewrite * /seepnews{uri}
+	reverse_proxy app:8090
+}
+
+# -- Owner portal (KYC, agreements, agent connection, tax export) -----------
+
+owners.syntrends.com {
+	rewrite * /owners{uri}
+	reverse_proxy app:8090
+}
+
+# -- Agent API only (STP/1.0 text + SSE) -------------------------------------
+
+api.syntrends.com {
+	@allowed path /health /.well-known/syntrends /snapshot /stream* /keys/* /trade/* \
+		/aicoin/* /pfo/* /seepnews/post /agent/* /tick /docs /openapi.json
+	handle @allowed {
+		reverse_proxy app:8090
+	}
+	handle {
+		respond "not found — this host serves the agent API only" 404
+	}
+}
+
+# -- Read-only observation surfaces ------------------------------------------
+
+explorer.syntrends.com {
+	rewrite * /explorer{uri}
+	reverse_proxy app:8090
+}
+
+vendor.syntrends.com {
+	rewrite * /vendor{uri}
+	reverse_proxy app:8090
+}

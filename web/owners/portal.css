@@ -1,0 +1,87 @@
+/* Owner portal extras */
+
+form label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #12151c;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+button, .btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-dim);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+button:hover, .btn:hover { background: var(--accent); color: #0f1117; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.status-pill {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.status-pending { background: #3a3520; color: var(--warn); }
+.status-submitted { background: #2a3548; color: var(--accent); }
+.status-approved { background: #1a3328; color: var(--ok); }
+.status-paused { background: #3a2020; color: #f07178; }
+.status-active { background: #1a3328; color: var(--ok); }
+.status-gradual { background: #3a3520; color: var(--warn); }
+
+.agent-controls { margin-top: 0.75rem; }
+.agent-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.agent-row:last-child { border-bottom: none; }
+.agent-row code { font-size: 0.9rem; }
+.agent-row button { margin-top: 0; font-size: 0.85rem; padding: 0.4rem 0.85rem; }
+.btn-warn { background: #5c3030; }
+.btn-warn:hover { background: #7a4040; color: #fff; }
+.btn-ok { background: #1a4d3a; }
+.btn-ok:hover { background: var(--ok); color: #0f1117; }
+
+.error { color: #f07178; font-size: 0.9rem; margin-top: 0.5rem; }
+.success { color: var(--ok); font-size: 0.9rem; margin-top: 0.5rem; }
+
+.key-box {
+  word-break: break-all;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  background: #12151c;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.hidden { display: none; }
+
+.tabs { margin-bottom: 1rem; }
+.tabs button { margin-right: 0.5rem; background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.tabs button.active { background: var(--surface); color: var(--text); border-color: var(--accent-dim); }

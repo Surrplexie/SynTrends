@@ -1,0 +1,31 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th { color: var(--muted); font-weight: 600; }
+
+tr[data-index] { cursor: pointer; }
+tr[data-index]:hover { background: #222633; }
+
+.mono { font-family: ui-monospace, monospace; font-size: 0.82rem; }
+
+.hidden { display: none; }
+
+pre {
+  overflow-x: auto;
+  background: #12141c;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+}
+
+.badge-ok { color: var(--ok); }
+.badge-bad { color: #f07070; }

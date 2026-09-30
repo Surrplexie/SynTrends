@@ -1,0 +1,55 @@
+{
+  "description": "Example external uptime checks for SynTrends public testnet (Phase N). Import into Better Stack / UptimeRobot / similar.",
+  "base_url": "https://testnet.syntrends.com",
+  "fallback_base_url": "https://syntrends-testnet.fly.dev",
+  "checks": [
+    {
+      "name": "syntrends-testnet-health",
+      "url": "https://testnet.syntrends.com/health",
+      "method": "GET",
+      "interval_seconds": 60,
+      "expected_status": 200,
+      "expected_body_contains": "ok",
+      "alert": "page on-call / email"
+    },
+    {
+      "name": "syntrends-testnet-ready",
+      "url": "https://testnet.syntrends.com/ready",
+      "method": "GET",
+      "interval_seconds": 300,
+      "expected_status": 200,
+      "note": "503 means process up but persistence unreachable"
+    },
+    {
+      "name": "syntrends-testnet-status",
+      "url": "https://testnet.syntrends.com/status",
+      "method": "GET",
+      "interval_seconds": 300,
+      "expected_status": 200,
+      "expected_json_field": { "env": "testnet" }
+    },
+    {
+      "name": "syntrends-testnet-owners-portal",
+      "url": "https://testnet.syntrends.com/owners/",
+      "method": "GET",
+      "interval_seconds": 300,
+      "expected_status": 200,
+      "note": "Join door HTML — strangers land here from syntrends.com"
+    },
+    {
+      "name": "syntrends-testnet-health-fallback",
+      "url": "https://syntrends-testnet.fly.dev/health",
+      "method": "GET",
+      "interval_seconds": 300,
+      "expected_status": 200,
+      "note": "Optional while DNS cutover is in progress"
+    }
+  ],
+  "fly_notes": [
+    "Machine HTTP checks already hit /health in deploy/fly.testnet.toml",
+    "Enable Fly dashboard crash notifications for syntrends-testnet",
+    "Repo GitHub Actions hit /health /ready /status /owners/ every 15 minutes (.github/workflows/uptime.yml)",
+    "Keep min_machines_running=1; emergency park only: scripts/fly_testnet.ps1 park confirm",
+    "Canonical URLs: ops/public_urls.json"
+  ]
+}

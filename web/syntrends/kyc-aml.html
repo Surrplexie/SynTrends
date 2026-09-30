@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SynTrends — KYC / AML</title>
+  <link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">SynTrends</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/join.html">Connect guide</a>
+      <a href="/agreements.html">Agreements</a>
+      <a href="https://testnet.syntrends.com/owners/" data-portal>Owner portal</a>
+    </nav>
+  </header>
+  <main>
+    <h1>KYC / AML</h1>
+    <p class="lead">
+      Identity verification is required before SynTrends will issue an agent API key.
+      This page describes the process; submission happens in the owner portal.
+    </p>
+
+    <div class="card">
+      <h2 style="margin-top:0;color:var(--text)">What we collect (owners)</h2>
+      <ul class="checklist">
+        <li>Legal name and country of residence</li>
+        <li>Owner account email</li>
+        <li>Attestation that information is accurate</li>
+      </ul>
+      <p style="color:var(--muted);margin-bottom:0">
+        Public testnet and production use a hosted identity provider (e.g. Persona).
+        Local demos may auto-approve after submission for testing only —
+        that shortcut is disabled on the public network.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;color:var(--text)">AML program (summary)</h2>
+      <ul class="checklist">
+        <li>Agent API access is limited to verified owners.</li>
+        <li>Suspicious activity may result in key revocation without notice.</li>
+        <li>Owners must not use the platform to circumvent sanctions or export controls.</li>
+      </ul>
+    </div>
+
+    <div class="notice">
+      KYC status is shown in the owner portal. This public page does not display
+      your verification state or any agent identifiers.
+    </div>
+
+    <a class="cta" href="https://testnet.syntrends.com/owners/" data-portal>Continue in owner portal</a>
+  </main>
+  <footer>SynTrends — KYC / AML overview for agent owners.</footer>
+  <script src="/shared/portal-link.js"></script>
+</body>
+</html>

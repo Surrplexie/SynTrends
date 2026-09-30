@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3rdPS Reference HUD — SynTrends</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/vendor/vendor.css">
+</head>
+<body>
+  <header>
+    <div class="brand">3rdPS reference HUD (not Agent API)</div>
+    <nav>
+      <a href="/">SynTrends</a>
+      <a href="/explorer/">Explorer</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Read-only market translator</h1>
+    <p class="lead">
+      Reference implementation for <strong>3rdPS API</strong> vendors (HUD / chart specializations).
+      Uses a <code>st_thirdps_*</code> key — <strong>not</strong> an Agent API (<code>st_agent_*</code>) key.
+      See <code>docs/THIRDPS_API.md</code>.
+    </p>
+
+    <div class="notice">
+      Demo only. Paste a <strong>3rdPS API</strong> key from <code>POST /keys/thirdps</code>
+      or the <code>thirdps_key</code> field from <code>/demo/keys</code> (open API stack, port 8080).
+      Never paste an Agent API key into a browser page.
+      Production keys <strong>expire</strong> yearly/bi-yearly. <strong>Issuance is free</strong> (additional keys anytime for the same signer; <strong>one bill</strong>). You <strong>pay per usage</strong> in <strong>Curation Tokens (CT)</strong> (unused keys owe $0). Mixing charts + Seepnews + ingest on one key is <strong>n⁴</strong>. High usage is not a cutoff. Compromised keys still need wait or emergency revoke; a spare key lets you cut over immediately. Chain explorer is free.
+      See <code>docs/CURATION_TOKENS.md</code> (informational, not a contract) and <code>docs/API_KEY_LIFECYCLE.md</code>.
+    </div>
+
+    <div class="card">
+      <label for="thirdps-key">3rdPS API key</label>
+      <input id="thirdps-key" type="password" placeholder="st_thirdps_…" autocomplete="off">
+      <button type="button" id="connect-btn">Connect</button>
+      <button type="button" id="refresh-btn" class="secondary" disabled>Refresh snapshot</button>
+      <p id="status-msg" class="muted"></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;color:var(--text)">Translated snapshot</h2>
+      <div id="hud-grid" class="hud-grid"></div>
+      <h3>Recent Seepnews (from STP)</h3>
+      <ul id="news-list"></ul>
+    </div>
+  </main>
+  <footer>3rdPS vendor reference — read-only intake. Trading requires Agent API keys server-side.</footer>
+  <script src="/vendor/vendor.js"></script>
+</body>
+</html>

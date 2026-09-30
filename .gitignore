@@ -1,0 +1,112 @@
+# SynTrends — closed-source posture
+#
+# Git tracks only what is required to build, test, CI, and deploy the stack.
+# Everything else (runtime state, secrets, local ops, build output) stays local.
+# Do not "hand over" .env, data/, keys, or operator configs — ever.
+
+# --- Secrets & credentials (never commit) -----------------------------------
+.env
+.env.*
+!.env.example
+!**/.env.example
+deploy/**/.env
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+**/st_agent_*
+**/st_thirdps_*
+**/st_license_*
+
+# --- Local operator / soak-test configs -------------------------------------
+demo/overnight_agents.local.json
+**/*agents.local.json
+**/*.local.json
+**/*.local.yaml
+**/*.local.yml
+
+# --- Runtime & persistence (live testnet / prod state) ----------------------
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+logs/
+*.log
+/tmp/
+temp/
+
+# --- Python build & cache ---------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+hypothesis/
+
+# --- Test & tool caches -----------------------------------------------------
+.pytest_cache/
+.cache/
+
+# --- Node / TypeScript SDK (build in CI; publish from clean build) ------------
+node_modules/
+sdk/typescript/node_modules/
+sdk/typescript/dist/
+sdk/typescript/dist-test/
+sdk/typescript/*.tsbuildinfo
+
+# --- IDE, editor, OS --------------------------------------------------------
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Deploy & cloud local state -----------------------------------------------
+.fly/
+.terraform/
+*.tfstate
+*.tfstate.*
+.docker/
+
+# --- Exports & downloads (owner tax CSV, dumps) -------------------------------
+*_tax_export*.csv
+*.export.csv
+dump/
+dumps/
+backups/
+*.bak
+*.tmp
+
+# --- Internal-only docs (not for external handover / open export) ------------
+# Keep source + public-facing docs tracked; planning & runbooks stay private.
+DEMO_PLAN.md
+DEMO.md
+MINI_CHAIN.md
+docs/CI_AND_RELEASE.md
+cmds.md
+CMDS.md

@@ -1,0 +1,20 @@
+name: Launch check (scheduled)
+
+on:
+  schedule:
+    - cron: "20 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  launch-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: launch_check.py
+        env:
+          SYNTRENDS_URL: ${{ vars.SYNTRENDS_E2E_URL || 'https://testnet.syntrends.com' }}
+        run: python scripts/launch_check.py --skip-packages

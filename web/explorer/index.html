@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Block Explorer — SynTrends Demo</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/explorer/explorer.css">
+</head>
+<body>
+  <header>
+    <div class="brand">SynTrends block explorer</div>
+    <nav>
+      <a href="/">SynTrends</a>
+      <a href="/owners/">Owner portal</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Chain audit view</h1>
+    <p class="lead">Inspect mined blocks and transaction payloads. This is a chain log — not a trading dashboard.</p>
+
+    <div class="card" id="summary-card">
+      <p>Loading chain summary…</p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;color:var(--text)">Recent blocks</h2>
+      <table id="blocks-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Hash</th>
+            <th>Txs</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="blocks-body"></tbody>
+      </table>
+    </div>
+
+    <div id="block-detail" class="card hidden">
+      <h2 style="margin-top:0;color:var(--text)">Block detail</h2>
+      <pre id="block-json"></pre>
+    </div>
+  </main>
+  <footer>Demo block explorer — chain integrity only.</footer>
+  <script src="/explorer/explorer.js"></script>
+</body>
+</html>
