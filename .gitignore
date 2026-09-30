@@ -14,11 +14,18 @@ deploy/**/.env
 *.key
 *.p12
 *.pfx
+id_rsa
+id_rsa.pub
 credentials.json
 secrets.json
+secrets.*
+*.secrets
+.dev.vars
 **/st_agent_*
 **/st_thirdps_*
 **/st_license_*
+*st_agent_*
+*st_thirdps_*
 
 # --- Local operator / soak-test configs -------------------------------------
 demo/overnight_agents.local.json
@@ -39,6 +46,11 @@ logs/
 *.log
 /tmp/
 temp/
+snapshot.json
+**/snapshot.json
+app_snapshot.json
+*.snapshot.json
+snapshots/
 
 # --- Python build & cache ---------------------------------------------------
 __pycache__/
@@ -88,12 +100,13 @@ Desktop.ini
 
 # --- Deploy & cloud local state -----------------------------------------------
 .fly/
+.wrangler/
 .terraform/
 *.tfstate
 *.tfstate.*
 .docker/
 
-# --- Exports & downloads (owner tax CSV, dumps) -------------------------------
+# --- Exports, curl dumps, KYC/Persona captures --------------------------------
 *_tax_export*.csv
 *.export.csv
 dump/
@@ -101,6 +114,14 @@ dumps/
 backups/
 *.bak
 *.tmp
+tmp.txt
+tmp*.txt
+tmpexamp.txt
+*_webhook*.json
+persona*.json
+inquiry*.json
+evt_*.json
+*.dump.json
 
 # --- Internal-only docs (not for external handover / open export) ------------
 # Keep source + public-facing docs tracked; planning & runbooks stay private.
