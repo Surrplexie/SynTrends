@@ -58,6 +58,10 @@ class FaucetError(Exception):
     pass
 
 
+class SandboxDepositError(Exception):
+    """POST /agent/deposit is not allowed on this network."""
+
+
 class SynTrendsAPIService:
     """Thread-safe facade used by FastAPI routes."""
 
@@ -185,7 +189,7 @@ class SynTrendsAPIService:
                 "network": self.settings.network_name,
                 "protocol_version": self.settings.protocol_version,
                 "uptime_seconds": round(time.time() - self._started_at, 1),
-                "faucet_enabled": self.settings.faucet_enabled,
+                "faucet_enabled": self.settings.faucet_allowed,
                 "require_owner_kyc": self.require_owner_kyc,
                 "kyc_provider": self.kyc.name,
                 "agents_paused": self.agent_pause.paused_count(),
@@ -203,14 +207,14 @@ class SynTrendsAPIService:
 
     def faucet_info(self) -> dict:
         return {
-            "enabled": self.settings.faucet_enabled,
+            "enabled": self.settings.faucet_allowed,
             "amount": self.settings.faucet_amount,
             "cooldown_seconds": self.settings.faucet_cooldown_seconds,
             "note": "Simulated testnet fiat — no monetary value.",
         }
 
     def claim_faucet(self, key: APIKey) -> str:
-        if not self.settings.faucet_enabled:
+        if not self.settings.faucet_allowed:
             raise FaucetError("faucet is disabled on this network")
         if key.kind != KeyKind.AGENT or not key.agent_id:
             raise FaucetError("faucet requires an agent API key bound to an agent_id")
@@ -514,6 +518,11 @@ class SynTrendsAPIService:
 
     def deposit_fiat(self, key: APIKey, agent_id: str, amount: float) -> str:
         self.authenticate(key.token, write=True)
+        if not self.settings.sandbox_deposit_allowed:
+            raise SandboxDepositError(
+                "POST /agent/deposit is sandbox-only (local demo). "
+                "On testnet use POST /testnet/faucet. Live money uses owner funding, not this route."
+            )
         if key.agent_id and key.agent_id != agent_id:
             raise AuthError("agent key may only act as its bound agent_id")
         if reject := self._syntrendrules_reject_line(agent_id):

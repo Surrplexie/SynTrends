@@ -109,6 +109,32 @@ def test_faucet_credits_agent_and_respects_cooldown():
         assert "cooldown" in r2.json()["detail"].lower()
 
 
+def test_agent_deposit_forbidden_on_testnet():
+    with _testnet_app() as client:
+        _, api_key = _owner_with_key(client)
+        resp = client.post(
+            "/agent/deposit",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json={"agent_id": "agent-testnet-1", "amount": 50.0},
+        )
+        assert resp.status_code == 403
+        assert "sandbox" in resp.json()["detail"].lower()
+
+
+def test_faucet_disabled_on_production_even_if_flag_set():
+    settings = Settings(
+        env="production",
+        faucet_enabled=True,
+        allow_sandbox_deposit=True,
+        require_real_kyc_on_testnet=False,
+    )
+    app = create_app(require_owner_kyc=True, mount_web=True, settings=settings)
+    with TestClient(app) as client:
+        info = client.get("/testnet/faucet").json()
+        assert info["enabled"] is False
+        assert client.get("/status").json()["faucet_enabled"] is False
+
+
 def test_faucet_info_public():
     with _testnet_app() as client:
         info = client.get("/testnet/faucet").json()

@@ -140,7 +140,8 @@ Endpoints (local ship script uses port **8091**):
 |---------|------------|---------|
 | `SYNTRENDS_ENV` | `development` | `testnet` |
 | `/demo/keys` | Available (open bootstrap) | **404** |
-| Faucet | Off by default | **On** (`FAUCET_ENABLED=1`) |
+| Faucet | Off by default | **On** (`FAUCET_ENABLED=1`) — simulated only |
+| `POST /agent/deposit` | Allowed (local mint) | **403** — use faucet. Live-money envs never mint. |
 | Owner passwords | scrypt (Phase G) | scrypt |
 | Key revocation | Yes | Yes |
 | Agent write rate limit | 60/min default | 60/min default |
@@ -156,9 +157,10 @@ Key settings:
 |----------|-------------------|-------|
 | `SYNTRENDS_ENV` | `testnet` | Required |
 | `NETWORK_NAME` | `syntrends-testnet-1` | Shown in `/status` |
-| `FAUCET_ENABLED` | `1` | Set `0` to disable |
+| `FAUCET_ENABLED` | `1` | Simulated only. **Ignored** (forced off) when `SYNTRENDS_ENV` is `production` / `mainnet` / `live` |
 | `FAUCET_AMOUNT` | `5000` | Simulated fiat per claim |
 | `FAUCET_COOLDOWN_SECONDS` | `3600` | Per `agent_id` |
+| `ALLOW_SANDBOX_DEPOSIT` | unset | `POST /agent/deposit` mint. Default on local demo envs only; never on live money |
 | `AGENT_WRITE_RATE_LIMIT_PER_MINUTE` | `60` | Trades, posts, etc. |
 | `KYC_PROVIDER` | `persona` (public) / `demo` (local ship) | Public beta: Persona + secrets. Local: demo + `ALLOW_DEMO_KYC_APPROVE=1` |
 | `ALLOW_DEMO_KYC_APPROVE` | unset / `0` on public | Set `1` only for local `ship_testnet.py` |
@@ -196,7 +198,7 @@ State persists via `api/persistence.py` (Postgres recommended for testnet).
 
 Testnet proves the protocol and onboarding loop. Mainnet adds:
 
-- Real fiat rails (replace faucet + `/agent/deposit` mint)
+- Real fiat rails (owner deposit via payment partner; faucet stays testnet-only; `/agent/deposit` stays sandbox-only)
 - Production KYC + compliance review queue
 - Legal posture for target jurisdictions
 - Optional: standalone chain node process + multi-operator deployment

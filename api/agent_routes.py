@@ -21,7 +21,12 @@ from .curation import (
     SNAPSHOT_CLASSES,
 )
 from .owners import KYCError, OwnerAuthError, OwnerRegistry
-from .service import RateLimitError, SynTrendsAPIService, WriteForbiddenError
+from .service import (
+    RateLimitError,
+    SandboxDepositError,
+    SynTrendsAPIService,
+    WriteForbiddenError,
+)
 from .seeprules import SEEPRULES_VERSION, SeeprulesError
 from .syntrendrules import SYNTRENDRULES_VERSION, SyntrendrulesError
 
@@ -446,6 +451,8 @@ def _handle_write(token: str, fn) -> PlainTextResponse:
         return _stp_response(fn(svc, key))
     except WriteForbiddenError as exc:
         raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except SandboxDepositError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     except AuthError as exc:
         raise HTTPException(status_code=401, detail=str(exc)) from exc
     except AICoinError as exc:
@@ -523,6 +530,7 @@ def seepnews_post(body: SeepnewsBody, token: Annotated[str, Depends(get_key)]):
 
 @router.post("/agent/deposit", response_class=PlainTextResponse)
 def agent_deposit(body: DepositBody, token: Annotated[str, Depends(get_key)]):
+    """Mint sandbox fiat. Local demo only — 403 on testnet and live-money envs."""
     def run(svc: SynTrendsAPIService, key):
         return svc.deposit_fiat(key, body.agent_id, body.amount)
 

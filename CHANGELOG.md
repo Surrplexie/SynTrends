@@ -10,6 +10,8 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 ### Changed
 
+- **Fiat mint gates:** `POST /agent/deposit` is local-demo sandbox only (HTTP 403 on testnet). Faucet cannot be enabled when `SYNTRENDS_ENV` is `production` / `mainnet` / `live`, even if `FAUCET_ENABLED=1`. Public testnet still uses the simulated faucet.
+
 - **Hosted testnet on Fly Managed Postgres (2026-10-06):** `DATABASE_URL` is MPG PgBouncer (cluster `syntrends-testnet-db` / `1zqyxr7gwz1rwp8m`), not sqlite in the VM. Snapshot `backups/pre-postgres.json` restored (height 9, 5 agents). Dockerfile does not bake `ENV DATABASE_URL`. Restore on the app VM via `fly ssh sftp put` — laptop cannot reach MPG. Log: [`docs/OPS_LOG.md`](docs/OPS_LOG.md).
 - **Phase N operator-only:** `launch_check --require-persona --require-packages` green; GitHub `FLY_API_TOKEN` + `SYNTRENDS_E2E_URL`; tag `testnet-v1.0` on `Surrplexie/SynTrends`. No external invites.
 - **Public testnet always-on:** Fly `min_machines_running = 1` / `auto_stop_machines = off`. Park is `scripts/fly_testnet.* park confirm` only. Marketing pages deep-link `https://testnet.syntrends.com/owners/`. GitHub probes: uptime every 15m, launch_check every 6h, nightly E2E, daily snapshot artifact.

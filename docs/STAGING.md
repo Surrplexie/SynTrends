@@ -136,8 +136,9 @@ webhook (HMAC-verified — see `PersonaKYCProvider.verify_webhook`).
 
 ## What's still simulated
 
-- **Fiat** — `/agent/deposit` still mints sandbox balance; no real payment
-  processor is wired in. That's the next milestone once staging is stable.
+- **Fiat** — no real payment processor. Staging/`testnet` **cannot** mint via
+  `POST /agent/deposit` (403). Testnet uses the faucet; live money will use
+  owner funding webhooks. Local demo still allows `/agent/deposit`.
 - **Compliance review** — Persona flags `needs_review` cases but this repo
   doesn't yet have a human reviewer queue/UI for manual decisions.
 - **Rate limiting / abuse controls** at the edge (Cloudflare or similar) —

@@ -91,7 +91,7 @@ Stream query params: `tail=N`, `snapshot=1`.
 | POST | `/aicoin/launch` | launch params | STP lines |
 | POST | `/pfo/place` | post-freeze order | STP lines |
 | POST | `/seepnews/post` | category, body, mentions | `SN/` line |
-| POST | `/agent/deposit` | sandbox fiat | STP lines |
+| POST | `/agent/deposit` | sandbox fiat (local demo **only**; **403** on testnet / live) | STP lines |
 | POST | `/tick` | optional ticker | advance freeze/PFO state |
 
 All write responses are `text/plain` STP lines, not JSON.

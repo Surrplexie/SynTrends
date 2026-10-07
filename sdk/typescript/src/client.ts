@@ -129,6 +129,7 @@ export class SynTrendsClient {
 
   // -- writes ----------------------------------------------------------------
 
+  /** Mint sandbox fiat. Local demo only; testnet returns 403 (use faucet). */
   async deposit(agentId: string, amount: number): Promise<STPRecord[]> {
     return parseStream(await this.post("/agent/deposit", { agent_id: agentId, amount }));
   }

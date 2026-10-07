@@ -170,6 +170,7 @@ class SynTrendsClient:
     # -- writes ------------------------------------------------------------------
 
     def deposit(self, agent_id: str, amount: float) -> list[STPRecord]:
+        """Mint sandbox fiat. Works on local demo only; testnet returns 403 (use faucet)."""
         return self._post("/agent/deposit", {"agent_id": agent_id, "amount": amount})
 
     def buy(self, *, ticker: str | None = None, coin_id: str | None = None, fiat_amount: float) -> list[STPRecord]:

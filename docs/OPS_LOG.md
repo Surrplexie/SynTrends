@@ -50,3 +50,11 @@ From a Windows laptop (`SYNTRENDS_URL=https://testnet.syntrends.com`):
 ### Next
 
 Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_check / nightly E2E / snapshot backup). Invite only when there are people. Do not park; do not reseed.
+
+---
+
+## 2026-10-07 — Fiat mint gates (step 1, no partner yet)
+
+- `POST /agent/deposit` mints only on local demo (`development` / `demo` / `test`). Public testnet and live-money envs return **403**.
+- `SYNTRENDS_ENV=production|mainnet|live` forces faucet **off** even if `FAUCET_ENABLED=1`.
+- Hosted testnet still uses simulated `POST /testnet/faucet`. Owner cash ledger (step 2) is not built.

@@ -36,6 +36,16 @@ def _float_env(name: str, default: float) -> float:
     return float(raw)
 
 
+def _truthy_env(name: str, default: str = "") -> bool:
+    return os.environ.get(name, default).strip().lower() in ("1", "true", "yes")
+
+
+# Real-dollar (or pretends-to-be) deployments. Faucet and /agent/deposit mint
+# are impossible here even if FAUCET_ENABLED / ALLOW_SANDBOX_DEPOSIT are set.
+LIVE_MONEY_ENVS = frozenset({"production", "mainnet", "live"})
+DEMO_ENVS = frozenset({"development", "demo", "test"})
+
+
 @dataclass(frozen=True)
 class Settings:
     env: str = "development"
@@ -68,20 +78,47 @@ class Settings:
     allow_demo_kyc_approve: bool = False
     # Public beta: require Persona credentials when KYC_PROVIDER=persona on testnet.
     require_real_kyc_on_testnet: bool = True
+    # POST /agent/deposit mints balance. Default off except local demo envs.
+    allow_sandbox_deposit: bool = False
 
     @property
     def is_production(self) -> bool:
-        return self.env == "production"
+        return self.env in LIVE_MONEY_ENVS
 
     @property
     def is_testnet(self) -> bool:
         return self.env == "testnet"
 
     @property
+    def is_live_money(self) -> bool:
+        """Env names that must never mint simulated fiat."""
+        return self.env in LIVE_MONEY_ENVS
+
+    @property
     def is_demo_env(self) -> bool:
         """True for local/dev/demo — where shortcuts like the KYC admin
         approve button and open `/demo/keys` bootstrap are safe to expose."""
-        return self.env in ("development", "demo", "test")
+        return self.env in DEMO_ENVS
+
+    @property
+    def faucet_allowed(self) -> bool:
+        """Simulated faucet. Never on live-money envs, even if FAUCET_ENABLED=1."""
+        if self.is_live_money:
+            return False
+        return self.faucet_enabled
+
+    @property
+    def sandbox_deposit_allowed(self) -> bool:
+        """POST /agent/deposit mints agent fiat. Local demo only.
+
+        Public testnet uses the faucet. Live money will use owner funding
+        (partner webhook) — not this route.
+        """
+        if self.is_live_money:
+            return False
+        if self.is_demo_env:
+            return True
+        return self.allow_sandbox_deposit
 
     @property
     def demo_kyc_approve_allowed(self) -> bool:
@@ -102,20 +139,23 @@ class Settings:
         env = os.environ.get("SYNTRENDS_ENV", "development").strip().lower()
         database_url = os.environ.get("DATABASE_URL", "").strip() or None
         cors_raw = os.environ.get("CORS_ORIGINS", "").strip()
-        cors_origins = _split_csv(cors_raw) or (["*"] if env not in ("production", "testnet") else [])
+        cors_origins = _split_csv(cors_raw) or (
+            ["*"] if env not in ("production", "testnet", "mainnet", "live") else []
+        )
 
         network_name = os.environ.get("NETWORK_NAME", "").strip()
         if not network_name:
             network_name = {
                 "testnet": "syntrends-testnet-1",
                 "production": "syntrends-mainnet-1",
+                "mainnet": "syntrends-mainnet-1",
+                "live": "syntrends-mainnet-1",
             }.get(env, "syntrends-local")
 
-        faucet_enabled = os.environ.get("FAUCET_ENABLED", "1" if env == "testnet" else "0").strip().lower() in (
-            "1",
-            "true",
-            "yes",
-        )
+        if env in LIVE_MONEY_ENVS:
+            faucet_enabled = False
+        else:
+            faucet_enabled = _truthy_env("FAUCET_ENABLED", "1" if env == "testnet" else "0")
 
         return cls(
             env=env,
@@ -142,10 +182,7 @@ class Settings:
                 "THIRDPS_USD_PER_CT",
                 _float_env("THIRDPS_USD_PER_WEIGHT", 0.001),
             ),
-            allow_demo_kyc_approve=os.environ.get("ALLOW_DEMO_KYC_APPROVE", "").strip().lower()
-            in ("1", "true", "yes"),
-            require_real_kyc_on_testnet=os.environ.get("REQUIRE_REAL_KYC_ON_TESTNET", "1")
-            .strip()
-            .lower()
-            in ("1", "true", "yes"),
+            allow_demo_kyc_approve=_truthy_env("ALLOW_DEMO_KYC_APPROVE"),
+            require_real_kyc_on_testnet=_truthy_env("REQUIRE_REAL_KYC_ON_TESTNET", "1"),
+            allow_sandbox_deposit=_truthy_env("ALLOW_SANDBOX_DEPOSIT"),
         )

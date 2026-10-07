@@ -123,7 +123,7 @@ def portal_config():
         "network": svc.settings.network_name,
         "kyc_provider": svc.kyc.name,
         "demo_admin_approve_enabled": demo_approve,
-        "faucet_enabled": svc.settings.faucet_enabled,
+        "faucet_enabled": svc.settings.faucet_allowed,
         "testnet": svc.settings.is_testnet,
         "public_beta": svc.settings.is_testnet and not demo_approve,
     }

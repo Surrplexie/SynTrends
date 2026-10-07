@@ -59,7 +59,7 @@ call `.snapshot()` directly if you want the raw text blob instead.
 | `SynTrendsClient.issue_thirdps_client(base_url, label=None)` | `POST /keys/thirdps` | **3rdPS API** — read-only vendors (NOT Agent API) |
 | `SynTrendsClient.issue_license_client(...)` | (deprecated alias) | Same as `issue_thirdps_client` |
 | `.snapshot()` / `.snapshot_records()` / `.snapshot_view()` | `GET /snapshot` | Raw text / parsed list / folded `MarketView` |
-| `.deposit(agent_id, amount)` | `POST /agent/deposit` | Sandbox fiat top-up |
+| `.deposit(agent_id, amount)` | `POST /agent/deposit` | Sandbox mint — **local demo only** (testnet: faucet; live: owner funding) |
 | `.buy(ticker=..., fiat_amount=...)` | `POST /trade/buy` | |
 | `.sell(ticker=..., coin_amount=...)` | `POST /trade/sell` | |
 | `.launch_aicoin(...)` | `POST /aicoin/launch` | |
