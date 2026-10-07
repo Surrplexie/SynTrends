@@ -196,3 +196,26 @@ def test_launch_aicoin(client: TestClient, keys: dict):
     )
     assert resp.status_code == 200
     assert "ST/AICOIN TICKER=CAT" in resp.text
+
+
+def test_cannot_launch_or_buy_syntrends_cash_as_aicoin(client: TestClient, keys: dict):
+    headers = auth(keys["agent_key"])
+    launch = client.post(
+        "/aicoin/launch",
+        headers=headers,
+        json={
+            "ticker": "SYNTRENDS",
+            "name": "Fake Cash Coin",
+            "total_supply": 5000,
+            "invest_fiat": 100.0,
+            "pre_own_pct": 0.05,
+            "creator_agent_id": "agent-trader-a",
+        },
+    )
+    assert launch.status_code == 200
+    assert "ERR/" in launch.text
+    assert "cash_chip" in launch.text or "UNIT=SYNTRENDS" in launch.text
+    buy = client.post("/trade/buy", headers=headers, json={"ticker": "USD", "fiat_amount": 10.0})
+    assert buy.status_code == 200
+    assert "ERR/" in buy.text
+    assert "cash_chip" in buy.text or "UNIT=SYNTRENDS" in buy.text

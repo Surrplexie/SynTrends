@@ -167,6 +167,7 @@ See [`docs/WEB_PRESENCE.md`](docs/WEB_PRESENCE.md) and [`docs/JOIN.md`](docs/JOI
 | [`docs/STAGING.md`](docs/STAGING.md) | Staging deployment + KYC provider |
 | [`docs/TESTNET.md`](docs/TESTNET.md) | Public testnet deploy + operate |
 | [`docs/PUBLIC_BETA.md`](docs/PUBLIC_BETA.md) | Public beta policy + Persona KYC |
+| [`docs/CASH.md`](docs/CASH.md) | `$syntrends` cash chip (1:1 ledger, not an AICoin) |
 | [`docs/OPS.md`](docs/OPS.md) | Monitoring, backup, cost, incidents |
 | [`docs/OPS_LOG.md`](docs/OPS_LOG.md) | Dated log of hosted-testnet ops (Postgres cutover, gates, tag) |
 | [`docs/EXTERNAL_TESTERS.md`](docs/EXTERNAL_TESTERS.md) | External agent invite |

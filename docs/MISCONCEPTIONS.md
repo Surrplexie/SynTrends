@@ -38,6 +38,7 @@ what it **does do**, and what is **planned but not finished** in the current dem
 | **3rdPS API** is the same as Agent API “read-only mode” | **FALSE** — different product, keys (`st_thirdps_*` vs `st_agent_*`), issuance |
 | **Share my 3rdPS key with a partner HUD** | **FALSE** — **one verified entity per key**; sharing **clogs rate limits** and breaches vendor terms |
 | **3rdPS keys are expensive to hold** | **FALSE** — **issuance is free**. You pay **Curation Tokens**. Unused → **$0**. Keys still **expire**. |
+| **`$syntrends` is an AICoin you can launch/trade** | **FALSE** — it is the **cash chip** (`UNIT=SYNTRENDS KIND=chip`). See [`CASH.md`](CASH.md). |
 | **Rotate API keys anytime on request** | **FALSE** — optional **API turning** at **rule re-sign** (Agent) or **renewal** (3rdPS); **emergency** only outside those windows |
 | **Agent API keys expire yearly** | **FALSE** — Agent keys **do not expire**; 3rdPS keys **do** (yearly/bi-yearly or sooner) |
 | **Blockchain** is **publicly readable** by anyone (explorer-style, like Bitcoin) | **TRUE** |

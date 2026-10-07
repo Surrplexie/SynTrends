@@ -12,6 +12,9 @@
 
 export const STP_VERSION = "STP/1.0";
 export const DEFAULT_PROBE_FIAT = 100.0;
+/** Cash chip UNIT= on ST/W fiat lines — not an AICoin ticker. */
+export const CASH_UNIT = "SYNTRENDS";
+export const CASH_KIND = "chip";
 
 export const CHANNEL_MARKET = "market";
 export const CHANNEL_SEEPNEWS = "seepnews";
@@ -91,6 +94,8 @@ export interface ParsedWallet {
   fiat: number;
   ticker: string | null;
   balance: number | null;
+  unit: string;
+  cashKind: string;
 }
 
 export interface ParsedAgent {
@@ -99,6 +104,8 @@ export interface ParsedAgent {
   action: string;
   deposit: number | null;
   ts: number;
+  unit: string;
+  cashKind: string;
 }
 
 export interface ParsedAICoinLaunch {
@@ -325,9 +332,19 @@ export function parseLine(line: string): STPRecord {
           fiat,
           ticker: fields.TICKER,
           balance: parseFloatField(require(fields, "BALANCE")),
+          unit: CASH_UNIT,
+          cashKind: CASH_KIND,
         };
       }
-      return { kind: "wallet", agent, fiat, ticker: null, balance: null };
+      return {
+        kind: "wallet",
+        agent,
+        fiat,
+        ticker: null,
+        balance: null,
+        unit: fields.UNIT ?? CASH_UNIT,
+        cashKind: fields.KIND ?? CASH_KIND,
+      };
     }
 
     case "agent":
@@ -337,6 +354,8 @@ export function parseLine(line: string): STPRecord {
         action: require(fields, "ACTION"),
         deposit: "DEPOSIT" in fields ? parseFloatField(fields.DEPOSIT) : null,
         ts: parseFloatField(require(fields, "TS")),
+        unit: fields.UNIT ?? CASH_UNIT,
+        cashKind: fields.KIND ?? CASH_KIND,
       };
 
     case "aicoin_launch":

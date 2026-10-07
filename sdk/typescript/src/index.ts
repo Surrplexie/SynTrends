@@ -24,6 +24,8 @@ export {
 export { MarketView } from "./state.js";
 export type { TickerSnapshot } from "./state.js";
 export {
+  CASH_KIND,
+  CASH_UNIT,
   CHANNEL_ALL,
   CHANNEL_MARKET,
   CHANNEL_SEEPNEWS,

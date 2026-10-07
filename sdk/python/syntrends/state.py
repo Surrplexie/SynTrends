@@ -157,4 +157,8 @@ class MarketView:
         return self.wallets_coin.get((agent_id, ticker), 0.0)
 
     def fiat_balance(self, agent_id: str) -> float:
+        """$syntrends cash chip (1:1 ledger), not an AICoin balance."""
         return self.wallets_fiat.get(agent_id, 0.0)
+
+    def cash_balance(self, agent_id: str) -> float:
+        return self.fiat_balance(agent_id)

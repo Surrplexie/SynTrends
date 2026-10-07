@@ -58,3 +58,11 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 - `POST /agent/deposit` mints only on local demo (`development` / `demo` / `test`). Public testnet and live-money envs return **403**.
 - `SYNTRENDS_ENV=production|mainnet|live` forces faucet **off** even if `FAUCET_ENABLED=1`.
 - Hosted testnet still uses simulated `POST /testnet/faucet`. Owner cash ledger (step 2) is not built.
+
+---
+
+## 2026-10-07 — `$syntrends` is a chip, not a coin (step 3)
+
+- Same agent fiat number; STP now emits `UNIT=SYNTRENDS KIND=chip`.
+- Cannot `launch` / `buy` ticker `SYNTRENDS` / `USD` / `FIAT` / etc. as an AICoin.
+- Partner adapters (step 4) not built. Doc: [`CASH.md`](CASH.md).

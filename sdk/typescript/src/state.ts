@@ -181,7 +181,12 @@ export class MarketView {
     return this.walletsCoin.get(`${agentId}|${ticker}`) ?? 0;
   }
 
+  /** $syntrends cash chip (1:1 ledger), not an AICoin. */
   fiatBalance(agentId: string): number {
     return this.walletsFiat.get(agentId) ?? 0;
+  }
+
+  cashBalance(agentId: string): number {
+    return this.fiatBalance(agentId);
   }
 }

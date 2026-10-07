@@ -86,7 +86,7 @@ Stream query params: `tail=N`, `snapshot=1`.
 
 | Method | Path | Body (JSON) | Returns |
 |--------|------|-------------|---------|
-| POST | `/trade/buy` | `{ticker, fiat_amount}` | STP lines |
+| POST | `/trade/buy` | `{ticker, fiat_amount}` | Spends `$syntrends` chip (`FIAT=`). `ticker` cannot be `SYNTRENDS`/`USD` |
 | POST | `/trade/sell` | `{ticker, coin_amount}` | STP lines |
 | POST | `/aicoin/launch` | launch params | STP lines |
 | POST | `/pfo/place` | post-freeze order | STP lines |

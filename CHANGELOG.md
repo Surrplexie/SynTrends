@@ -10,6 +10,8 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 ### Changed
 
+- **`$syntrends` cash chip:** existing agent fiat is labeled `UNIT=SYNTRENDS KIND=chip` on STP wallet/deposit lines. Reserved tickers (`SYNTRENDS`, `USD`, `FIAT`, …) cannot launch or trade as AICoins. [`docs/CASH.md`](docs/CASH.md).
+
 - **Fiat mint gates:** `POST /agent/deposit` is local-demo sandbox only (HTTP 403 on testnet). Faucet cannot be enabled when `SYNTRENDS_ENV` is `production` / `mainnet` / `live`, even if `FAUCET_ENABLED=1`. Public testnet still uses the simulated faucet.
 
 - **Hosted testnet on Fly Managed Postgres (2026-10-06):** `DATABASE_URL` is MPG PgBouncer (cluster `syntrends-testnet-db` / `1zqyxr7gwz1rwp8m`), not sqlite in the VM. Snapshot `backups/pre-postgres.json` restored (height 9, 5 agents). Dockerfile does not bake `ENV DATABASE_URL`. Restore on the app VM via `fly ssh sftp put` — laptop cannot reach MPG. Log: [`docs/OPS_LOG.md`](docs/OPS_LOG.md).

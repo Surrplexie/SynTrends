@@ -6,6 +6,7 @@ import threading
 import time
 
 from chain.aicoin import AICoinError
+from chain.cash import CASH_KIND, CASH_UNIT, is_reserved_cash_ticker, reserved_ticker_error
 from chain.clock import ManualClock
 from chain.engine import SynTrendsDemo
 from chain.freeze import FreezeState
@@ -190,6 +191,8 @@ class SynTrendsAPIService:
                 "protocol_version": self.settings.protocol_version,
                 "uptime_seconds": round(time.time() - self._started_at, 1),
                 "faucet_enabled": self.settings.faucet_allowed,
+                "cash_unit": CASH_UNIT,
+                "cash_kind": CASH_KIND,
                 "require_owner_kyc": self.require_owner_kyc,
                 "kyc_provider": self.kyc.name,
                 "agents_paused": self.agent_pause.paused_count(),
@@ -210,7 +213,7 @@ class SynTrendsAPIService:
             "enabled": self.settings.faucet_allowed,
             "amount": self.settings.faucet_amount,
             "cooldown_seconds": self.settings.faucet_cooldown_seconds,
-            "note": "Simulated testnet fiat — no monetary value.",
+            "note": "Simulated $syntrends cash chip (UNIT=SYNTRENDS KIND=chip) — no monetary value.",
         }
 
     def claim_faucet(self, key: APIKey) -> str:
@@ -404,6 +407,8 @@ class SynTrendsAPIService:
         if not ticker:
             raise AICoinError("ticker or coin_id required")
         ticker = ticker.upper()
+        if is_reserved_cash_ticker(ticker):
+            raise AICoinError(reserved_ticker_error(ticker))
         for cid, coin in self.demo.coins.items():
             if coin.ticker == ticker:
                 return cid

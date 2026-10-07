@@ -90,6 +90,8 @@ def test_status_endpoint():
         assert data["network"] == "syntrends-testnet-1"
         assert "block_height" in data
         assert data["faucet_enabled"] is True
+        assert data["cash_unit"] == "SYNTRENDS"
+        assert data["cash_kind"] == "chip"
 
 
 def test_demo_keys_blocked_on_testnet():

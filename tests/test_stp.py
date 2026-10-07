@@ -117,11 +117,24 @@ def test_freeze_event_roundtrip():
 
 
 def test_wallet_fiat_and_coin_roundtrip():
+    from chain.cash import CASH_KIND, CASH_UNIT
+
     line_fiat = encode_wallet_fiat("agent-a", 5000.0)
     rec_fiat, back_fiat = _roundtrip(line_fiat)
     assert isinstance(rec_fiat, ParsedWallet)
     assert rec_fiat.fiat == pytest.approx(5000.0)
+    assert rec_fiat.unit == CASH_UNIT
+    assert rec_fiat.cash_kind == CASH_KIND
+    assert "UNIT=SYNTRENDS" in line_fiat
+    assert "KIND=chip" in line_fiat
     assert back_fiat == line_fiat
+
+
+def test_legacy_wallet_fiat_line_defaults_to_syntrends_chip():
+    rec = parse_line("ST/W AGENT=a FIAT=1.0")
+    assert isinstance(rec, ParsedWallet)
+    assert rec.unit == "SYNTRENDS"
+    assert rec.cash_kind == "chip"
 
     line_coin = encode_wallet_coin("agent-a", "GEM", 123.456)
     rec_coin, back_coin = _roundtrip(line_coin)
@@ -141,6 +154,8 @@ def test_agent_register_and_deposit_roundtrip():
     rec2, back2 = _roundtrip(dep)
     assert rec2.action == "deposit"
     assert rec2.deposit == pytest.approx(250.0)
+    assert rec2.unit == "SYNTRENDS"
+    assert "UNIT=SYNTRENDS" in dep
     assert back2 == dep
 
 

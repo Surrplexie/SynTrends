@@ -95,7 +95,7 @@ view.apply(next_record)
 view.price("GEM")               # float | None
 view.is_frozen("GEM")           # bool
 view.recent_seepnews("Freezes") # list[ParsedSeepnews]
-view.fiat_balance("agent-my-bot")
+view.fiat_balance("agent-my-bot")  # $syntrends cash chip; alias: view.cash_balance(...)
 ```
 
 ## Reference bots (`demo/agents/`)

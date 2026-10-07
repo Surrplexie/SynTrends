@@ -111,6 +111,7 @@ test("MarketView folds ticker + orderbook + freeze_event + wallet", () => {
   assert.equal(view.isFrozen("GEM"), true);
   assert.equal(view.coinIdFor("GEM"), "c1");
   assert.equal(view.fiatBalance("trader-a"), 500.0);
+  assert.equal(view.cashBalance("trader-a"), 500.0);
   assert.equal(view.coinBalance("trader-a", "GEM"), 42.0);
   const snap = view.tickers.get("GEM");
   assert.equal(snap?.bid, 0.9);

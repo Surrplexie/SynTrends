@@ -49,6 +49,12 @@ def test_invest_fiat_bounds_enforced():
         create_aicoin("X", "X", "f", 10_000, 600_000_000, 0.1)
 
 
+def test_reserved_cash_tickers_cannot_launch():
+    for ticker in ("SYNTRENDS", "$syntrends", "USD", "fiat"):
+        with pytest.raises(AICoinError, match="cash chip"):
+            create_aicoin(ticker, "Nope", "f", 10_000, 1_000, 0.1)
+
+
 def test_ticker_is_uppercased():
     coin = create_aicoin("gem", "Gemstone", "f", 10_000, 1_000, 0.1, clock=ManualClock(0.0))
     assert coin.ticker == "GEM"

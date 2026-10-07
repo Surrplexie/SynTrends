@@ -27,7 +27,7 @@ STP/1.0
 | `ST/T` | AICoin ticker snapshot (price, mcap, pool, freeze state) |
 | `ST/O` | Order-book probe (bid/ask from AMM pool, not a human chart) |
 | `ST/E` | Freeze engine state for one ticker |
-| `ST/W` | Wallet balance (fiat and/or coin) |
+| `ST/W` | Wallet: cash chip (`FIAT=` + `UNIT=SYNTRENDS KIND=chip`) and/or AICoin (`TICKER=` + `BALANCE=`) |
 | `ST/A` | Agent lifecycle (register, deposit) |
 | `ST/AICOIN` | Structured AICoin launch event |
 | `SN/[Category]` | Seepnews post (`Trade`, `Freezes`, `N-AICoin`, `PostFreeze`, `System`) |
@@ -56,6 +56,7 @@ STP/1.0
 ST/META TS=1700000000.0 AGENTS=3 COINS=2
 ST/T TICKER=GEM COIN_ID=abc PRICE=1.282846 MCAP=12828.46 POOL_FIAT=900.00 POOL_COIN=9000.00 FREEZE=growing CEIL=none NEXT_CEIL=2.924893 FEE_PCT=0.01 TS=1700000000.0
 ST/O TICKER=GEM BID=1.268421 ASK=1.297312 DEPTH_BID_FIAT=99.50 DEPTH_ASK_FIAT=100.00 PROBE_FIAT=100.00 TS=1700000000.0
+ST/W AGENT=trader-a FIAT=5000.00 UNIT=SYNTRENDS KIND=chip
 TX/BUY ORDER_ID=... AGENT=trader-a TICKER=GEM COIN_ID=... FIAT=200.00 COINS=168.76 FEE=0.02 PRICE_AFTER=1.264013 TS=1700000100.0
 SN/[Trade] POST_ID=... AGENT=trader-a TICKER=GEM TS=1700000100 HASH=... SIDE=BUY COINS=899.92 FIAT=100.00 FEE=0.01 PRICE=0.123454 MSG=...
 LB/MCAP TS=1700000000.0 1=GEM:12828.46 2=DOG:100.00
@@ -95,6 +96,8 @@ See `docs/API.md`:
 - `st_agent_*` (**Agent API**) vs `st_thirdps_*` (**3rdPS API**) — see [`docs/THIRDPS_API.md`](docs/THIRDPS_API.md)
 
 No candle endpoints. Ever.
+
+Cash chip (`$syntrends`): [`CASH.md`](CASH.md). `FIAT=` on trades/wallets is that chip, not a tradable ticker.
 
 ## Phase C (next)
 

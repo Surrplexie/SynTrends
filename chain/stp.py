@@ -37,6 +37,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Callable
 
 from .aicoin import AICoin
+from .cash import CASH_KIND, CASH_UNIT
 from .block import Block
 from .fees import FeeEngine
 from .freeze import FreezeEngine, FreezeState
@@ -244,6 +245,8 @@ class ParsedWallet:
     fiat: float = 0.0
     ticker: str | None = None
     balance: float | None = None
+    unit: str = CASH_UNIT
+    cash_kind: str = CASH_KIND
 
 
 @dataclass
@@ -253,6 +256,8 @@ class ParsedAgent:
     action: str = ""
     deposit: float | None = None
     ts: float = 0.0
+    unit: str = CASH_UNIT
+    cash_kind: str = CASH_KIND
 
 
 @dataclass
@@ -441,7 +446,10 @@ def encode_freeze_state(coin: AICoin, ts: float, clock: Callable[[], float]) -> 
 
 
 def encode_wallet_fiat(agent_id: str, fiat: float) -> str:
-    return f"ST/W AGENT={agent_id} FIAT={fmt_num(fiat)}"
+    return (
+        f"ST/W AGENT={agent_id} FIAT={fmt_num(fiat)} "
+        f"UNIT={CASH_UNIT} KIND={CASH_KIND}"
+    )
 
 
 def encode_wallet_coin(agent_id: str, ticker: str, balance: float) -> str:
@@ -453,7 +461,10 @@ def encode_agent_register(agent_id: str, ts: float) -> str:
 
 
 def encode_agent_deposit(agent_id: str, amount: float, ts: float) -> str:
-    return f"ST/A AGENT={agent_id} ACTION=deposit DEPOSIT={fmt_num(amount)} TS={fmt_num(ts)}"
+    return (
+        f"ST/A AGENT={agent_id} ACTION=deposit DEPOSIT={fmt_num(amount)} "
+        f"UNIT={CASH_UNIT} KIND={CASH_KIND} TS={fmt_num(ts)}"
+    )
 
 
 def encode_aicoin_launch(coin: AICoin, ts: float) -> str:
@@ -660,6 +671,9 @@ def parse_line(line: str) -> STPRecord:
         if "TICKER" in fields:
             rec.ticker = fields["TICKER"]
             rec.balance = parse_float(fields["BALANCE"])
+        else:
+            rec.unit = fields.get("UNIT", CASH_UNIT)
+            rec.cash_kind = fields.get("KIND", CASH_KIND)
         return rec
 
     if kind == STPLineKind.AGENT:
@@ -669,6 +683,8 @@ def parse_line(line: str) -> STPRecord:
             action=fields["ACTION"],
             deposit=deposit,
             ts=parse_float(fields["TS"]),
+            unit=fields.get("UNIT", CASH_UNIT),
+            cash_kind=fields.get("KIND", CASH_KIND),
         )
 
     if kind == STPLineKind.AICOIN_LAUNCH:

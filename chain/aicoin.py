@@ -26,6 +26,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Callable
 
+from .cash import is_reserved_cash_ticker, reserved_ticker_error
 from .freeze import FreezeEngine
 
 MIN_SUPPLY = 1_000
@@ -91,6 +92,8 @@ def create_aicoin(
         )
     if not (0.0 <= pre_own_pct <= MAX_PRE_OWN_PCT):
         raise AICoinError(f"pre_own_pct must be between 0 and {MAX_PRE_OWN_PCT:.0%}")
+    if is_reserved_cash_ticker(ticker):
+        raise AICoinError(reserved_ticker_error(ticker))
 
     launch_price = invest_fiat / total_supply
     creator_coins = total_supply * pre_own_pct

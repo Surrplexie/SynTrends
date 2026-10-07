@@ -3,8 +3,8 @@
     agent_id -> AICoin_id -> wallet_address
 
 Once a wallet is created for an (agent, coin) pair it is never replaced.
-Fiat is tracked separately per agent as a first-class balance, per the
-spec's "fiat must be treated as a first-class asset" rule.
+Fiat is tracked separately per agent as a first-class balance — that number
+*is* the $syntrends cash chip (1:1 ledger, not an AICoin). See chain.cash.
 """
 
 from __future__ import annotations
