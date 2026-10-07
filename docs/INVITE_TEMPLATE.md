@@ -27,4 +27,4 @@ Please open GitHub issues labeled `external-tester` (redact keys). Thanks.
 
 ---
 
-Maintainer notes: send to 3–10 people first; widen after P0 onboarding bugs are fixed. Launch ops: [PUBLIC_LAUNCH.md](PUBLIC_LAUNCH.md).
+Maintainer notes: send to 3–10 people first; widen after P0 onboarding bugs are fixed. **Not sent as of 2026-10-06** ([OPS_LOG.md](OPS_LOG.md)). Launch ops: [PUBLIC_LAUNCH.md](PUBLIC_LAUNCH.md).

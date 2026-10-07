@@ -2,7 +2,9 @@
 
 Declare the **working public release**: strangers can join via `.com`, KYC, install SDKs, and trade on the public testnet.
 
-Runbook: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) · URL map: [`ops/public_urls.json`](../ops/public_urls.json)
+Runbook: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) · URL map: [`ops/public_urls.json`](../ops/public_urls.json) · Log: [`OPS_LOG.md`](OPS_LOG.md)
+
+**2026-10-06:** engineering gates + `testnet-v1.0` tag done. Invites **not** sent (operator-only).
 
 ---
 
@@ -10,32 +12,32 @@ Runbook: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) · URL map: [`ops/public_urls.js
 
 ### Domain & identity
 
-- [ ] `testnet.syntrends.com` DNS + `fly certs` OK
-- [ ] Marketing CTAs → `https://testnet.syntrends.com/owners/`
-- [ ] `CORS_ORIGINS` includes `.com` + testnet + fly.dev fallback
-- [ ] Persona webhook = `https://testnet.syntrends.com/owners/api/kyc/webhook`
-- [ ] `GET /owners/api/config` → `kyc_provider=persona`, `demo_admin_approve_enabled=false`
+- [x] `testnet.syntrends.com` DNS + `fly certs` OK (launch_check HTTP 200 on `/owners/` `/join.html`)
+- [x] Marketing CTAs → `https://testnet.syntrends.com/owners/`
+- [x] `CORS_ORIGINS` includes `.com` + testnet + fly.dev fallback
+- [ ] Persona webhook = `https://testnet.syntrends.com/owners/api/kyc/webhook` (confirm in Persona dashboard if not already)
+- [x] `GET /owners/api/config` → `kyc_provider=persona`, `demo_admin_approve_enabled=false`
 
 ### Engineering
 
-- [ ] CI green on `main`
-- [ ] Nightly Fly E2E green (or known issue filed); prefer `SYNTRENDS_E2E_URL=https://testnet.syntrends.com`
-- [ ] `.\scripts\ops_check.ps1` against primary URL
-- [ ] `python scripts/launch_check.py --require-persona` passes
+- [ ] CI green on `main` (check Actions after token set)
+- [ ] Nightly Fly E2E green (or known issue filed); `SYNTRENDS_E2E_URL` **set** 2026-10-06
+- [x] `.\scripts\ops_check.ps1` against primary URL (2026-10-06)
+- [x] `python scripts/launch_check.py --require-persona` passes (2026-10-06)
 - [ ] Phase J: owner pause/resume verified once
-- [ ] Phase L: backup taken or reseed policy accepted ([`OPS.md`](OPS.md))
+- [x] Phase L: `backups/pre-postgres.json` restored onto MPG ([`OPS.md`](OPS.md))
 
 ### Packages
 
-- [ ] `python scripts/publish_check.py` passes
-- [ ] `syntrends` on PyPI and `@syntrends/sdk` on npm at aligned version
-- [ ] `python scripts/launch_check.py --require-packages` passes
-- [ ] [`CHANGELOG.md`](../CHANGELOG.md) updated
+- [ ] `python scripts/publish_check.py` passes (re-run if cutting a new SDK)
+- [x] `syntrends` on PyPI and `@syntrends/sdk` on npm at `0.1.0`
+- [x] `python scripts/launch_check.py --require-packages` passes (2026-10-06)
+- [x] [`CHANGELOG.md`](../CHANGELOG.md) updated (Unreleased: MPG cutover)
 
 ### Docs / invite
 
-- [ ] [`EXTERNAL_TESTERS.md`](EXTERNAL_TESTERS.md) + [`INVITE_TEMPLATE.md`](INVITE_TEMPLATE.md) accurate
-- [ ] [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) followed for cutover order
+- [x] [`EXTERNAL_TESTERS.md`](EXTERNAL_TESTERS.md) + [`INVITE_TEMPLATE.md`](INVITE_TEMPLATE.md) exist — **not sent**
+- [x] [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) cutover through tag; invite step deferred
 
 ### Git & hygiene
 

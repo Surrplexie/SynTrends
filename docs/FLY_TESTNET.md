@@ -12,7 +12,9 @@ Hosted demo URLs (when running):
 | Join (on app) | https://testnet.syntrends.com/join.html |
 | Marketing join | https://syntrends.com/join.html |
 
-Public launch (DNS/CORS/Persona): [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) · URL map: [`ops/public_urls.json`](../ops/public_urls.json)
+Public launch (DNS/CORS/Persona): [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md) · URL map: [`ops/public_urls.json`](../ops/public_urls.json) · What shipped: [`OPS_LOG.md`](OPS_LOG.md)
+
+Persistence: **Fly Managed Postgres** cluster `syntrends-testnet-db` (`1zqyxr7gwz1rwp8m`). Set `DATABASE_URL` from MPG **Connect → PgBouncer Connection URL** (`?sslmode=require`). Do not bake sqlite into the Dockerfile `ENV`.
 
 The public testnet is **always on** (`min_machines_running = 1`). Park is emergency-only (`park confirm`). Cold starts are not part of the join path.
 
@@ -103,37 +105,19 @@ Start again:
 
 **Option A — keep data, reduce Postgres cost**
 
-List clusters:
-
 ```powershell
-fly postgres list
+fly mpg list
 ```
 
-If you created a 3-node HA cluster, consider migrating to a **single-node** Fly Postgres or an external free tier (Neon, Supabase) and updating the `DATABASE_URL` secret:
+Live cluster is MPG **Basic** in **iad**. Do not recreate Unmanaged HA 3-node. To point at a cheaper host, export a snapshot first ([`OPS.md`](OPS.md) §3), then `fly secrets set DATABASE_URL=...` from the new PgBouncer URL (PowerShell: single-quote the URI). Never paste the URI into git/chat.
 
-```powershell
-fly secrets set DATABASE_URL="postgresql://..." -a syntrends-testnet
-fly deploy -c deploy/fly.testnet.toml
-```
+**Option B — ephemeral sqlite (not for this testnet)**
 
-Re-seed if you start fresh:
-
-```powershell
-fly ssh console -a syntrends-testnet -C "python -m demo.seed_testnet"
-```
-
-**Option B — ephemeral testnet (cheapest)**
-
-Remove `DATABASE_URL` secret and use SQLite inside the container (state lost on redeploy). Only for throwaway demos — not recommended if you want persistent chain history.
+Removing `DATABASE_URL` or baking `ENV DATABASE_URL=sqlite://...` in the image **loses chain history on every deploy**. That is how height 9 was lost before the 2026-10-06 restore. Do not do this while `testnet-v1.0` is tagged.
 
 **Option C — full teardown**
 
-Only when you are sure you do not need the data:
-
-```powershell
-fly apps destroy syntrends-testnet-db
-fly apps destroy syntrends-testnet
-```
+Only when you are sure you do not need the data. MPG destroy is in the Fly dashboard / `fly mpg` — not `fly apps destroy syntrends-testnet-db` (that name is Unmanaged Postgres).
 
 ---
 
@@ -143,17 +127,19 @@ Prerequisites: [flyctl](https://fly.io/docs/flyctl/install/), `fly auth login`.
 
 ```powershell
 fly apps create syntrends-testnet
-fly postgres create --name syntrends-testnet-db --region iad
-fly postgres attach syntrends-testnet-db -a syntrends-testnet
+fly mpg list
+# Attach by cluster **id** (fly mpg attach <id> -a syntrends-testnet).
+# If attach refuses because DATABASE_URL is already sqlite: fly secrets unset DATABASE_URL -a syntrends-testnet
+# Then set DATABASE_URL from MPG Connect → PgBouncer URL + ?sslmode=require (single-quoted in PowerShell).
 fly secrets set CORS_ORIGINS="https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://syntrends-testnet.fly.dev" -a syntrends-testnet
-fly deploy -c deploy/fly.testnet.toml
-fly ssh console -a syntrends-testnet -C "python -m demo.seed_testnet"
+.\scripts\fly_testnet.ps1 deploy
+# Empty DB seeds genesis. To keep history: restore backups\pre-postgres.json on the VM (OPS.md §3). Do not seed after restore.
 .\scripts\fly_testnet.ps1 ensure
 .\scripts\fly_testnet.ps1 certs
 .\scripts\fly_testnet.ps1 health
 ```
 
-Prefer **single-node** Postgres for hobby testnet unless you need HA.
+Prefer MPG **Basic** / single-node. `fly postgres create` is the old Unmanaged path and is not what `syntrends-testnet-db` uses.
 
 ---
 
@@ -171,7 +157,7 @@ SYNTRENDS_URL=https://testnet.syntrends.com python -m demo.e2e_testnet
 | | Local `ship_testnet.py` | Fly |
 |--|-------------------------|-----|
 | Cost | Free | App + Postgres |
-| Persistence | `data/testnet_live.db` | Postgres |
+| Persistence | `data/testnet_live.db` | MPG (`DATABASE_URL` → PgBouncer) |
 | Best for | Dev, overnight bots, CI | Sharing URL with others |
 | Uptime | While your PC runs | Public URL (always-on) |
 
@@ -181,7 +167,7 @@ SYNTRENDS_URL=https://testnet.syntrends.com python -m demo.e2e_testnet
 
 ## Nightly CI E2E
 
-GitHub Actions runs health every 15 minutes, launch_check every 6 hours, and the full testnet loop daily against Fly (see [`REPO_HYGIENE.md`](REPO_HYGIENE.md)). Set repo secret `FLY_API_TOKEN` so CI can scale the app if it was emergency-parked. Set Actions variable `SYNTRENDS_E2E_URL` to `https://testnet.syntrends.com`.
+GitHub Actions runs health every 15 minutes, launch_check every 6 hours, and the full testnet loop daily against Fly (see [`REPO_HYGIENE.md`](REPO_HYGIENE.md)). **Set 2026-10-06** on `Surrplexie/SynTrends`: secret `FLY_API_TOKEN`, variable `SYNTRENDS_E2E_URL=https://testnet.syntrends.com`.
 
 For Persona public beta E2E, also set Action secret `PERSONA_WEBHOOK_SECRET` to match Fly (workflow can forward it). Manual:
 

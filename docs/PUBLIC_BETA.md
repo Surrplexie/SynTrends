@@ -133,4 +133,4 @@ Full cutover: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md).
 
 **Phase L** ✅ — monitoring, backups, ops runbook: [`OPS.md`](OPS.md).  
 **Phase M** ✅ — publish SDKs + external testers: [`EXTERNAL_TESTERS.md`](EXTERNAL_TESTERS.md), [`PUBLISH.md`](PUBLISH.md).  
-**Phase N** ✅ — public launch ops: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md).
+**Phase N** ✅ — public launch ops: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md). Invites deferred; log: [`OPS_LOG.md`](OPS_LOG.md).

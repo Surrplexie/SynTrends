@@ -20,7 +20,7 @@ python scripts/launch_check.py
 # or: SYNTRENDS_URL=https://testnet.syntrends.com bash scripts/ops_check.sh
 ```
 
-Related: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md), [`FLY_TESTNET.md`](FLY_TESTNET.md), [`PUBLIC_BETA.md`](PUBLIC_BETA.md), [`REPO_HYGIENE.md`](REPO_HYGIENE.md).
+Related: [`OPS_LOG.md`](OPS_LOG.md) (what actually shipped), [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md), [`FLY_TESTNET.md`](FLY_TESTNET.md), [`PUBLIC_BETA.md`](PUBLIC_BETA.md), [`REPO_HYGIENE.md`](REPO_HYGIENE.md).
 
 ---
 
@@ -30,7 +30,7 @@ Related: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md), [`FLY_TESTNET.md`](FLY_TESTNET.
 |------|--------|
 | **Default** | App **always on**: `min_machines_running = 1`, `auto_stop_machines = off` in `deploy/fly.testnet.toml` |
 | **Park** | Emergency only: `.\scripts\fly_testnet.ps1 park confirm` — restores with `ensure` |
-| **Postgres** | Prefer **single-node**; HA 3-node only if you accept the bill |
+| **Postgres** | Fly **Managed Postgres (MPG)** cluster `syntrends-testnet-db` (`1zqyxr7gwz1rwp8m`, iad). Biggest bill. Do not recreate sqlite in the VM. |
 | **Scheduled probes** | GitHub **uptime** every 15 min, **launch_check** every 6h, **E2E** daily 11:00 UTC, **snapshot backup** daily 09:00 UTC |
 | **Dev** | Use local `ship_testnet.py` — free |
 | **Budget signal** | Check Fly Billing weekly; if Postgres dominates, downgrade instance, do **not** park the join door |
@@ -82,42 +82,35 @@ fly ssh console -a syntrends-testnet -C "python scripts/backup_snapshot.py expor
 
 ## 3. Backup & restore
 
-State lives in `app_snapshot` (single JSON row) via `DATABASE_URL`.
+State lives in `app_snapshot` (single JSON row) via `DATABASE_URL`. Hosted testnet uses **MPG** (not sqlite, not Unmanaged `fly postgres`). A Windows laptop usually **cannot** open `pgbouncer.<id>.flympg.net` — `backup_snapshot.py` from the PC will print `database not reachable`. Run export/restore **on the app VM**.
 
-### Export
+Live cutover (2026-10-06): [`OPS_LOG.md`](OPS_LOG.md). Sqlite-era snapshot: `backups/pre-postgres.json`.
+
+### Export (from the Fly machine)
 
 ```powershell
-# Local SQLite (ship_testnet)
+fly ssh console -a syntrends-testnet --pty=false -C "python scripts/backup_snapshot.py export -o /tmp/st-snap.json"
+fly ssh sftp get /tmp/st-snap.json backups\fly-$(Get-Date -Format yyyyMMdd).json -a syntrends-testnet
+```
+
+Local sqlite (ship_testnet only):
+
+```powershell
 $env:DATABASE_URL = "sqlite:///$((Resolve-Path data/testnet_live.db).Path -replace '\\','/')"
 python scripts/backup_snapshot.py export -o backups/testnet-$(Get-Date -Format yyyyMMdd).json
-
-# Meta only
 python scripts/backup_snapshot.py meta
 ```
 
-Fly Postgres (proxy then export):
+### Restore (onto MPG — do this on the VM)
 
 ```powershell
-fly proxy 5432 -a syntrends-testnet-db
-# In another shell, set DATABASE_URL from `fly postgres connect` / secrets
-python scripts/backup_snapshot.py export -o backups/fly-$(Get-Date -Format yyyyMMdd).json
-```
-
-Or from the app machine (if `DATABASE_URL` is in the container env):
-
-```powershell
-fly ssh console -a syntrends-testnet
-# then: python scripts/backup_snapshot.py export -o /tmp/snap.json
-```
-
-### Restore
-
-```powershell
-$env:DATABASE_URL = "..."
-python scripts/backup_snapshot.py restore -i backups/testnet-YYYYMMDD.json --yes
-fly apps restart syntrends-testnet   # required — process must reload snapshot
+fly ssh sftp put backups\pre-postgres.json /tmp/pre-postgres.json -a syntrends-testnet
+fly --% ssh console -a syntrends-testnet --pty=false -C "python scripts/backup_snapshot.py restore -i /tmp/pre-postgres.json --yes"
+fly apps restart syntrends-testnet
 .\scripts\ops_check.ps1
 ```
+
+Restart is required so the process reloads the row. Empty MPG on first boot seeds height 7 / 3 agents — restore instead of that seed if you have `pre-postgres.json`.
 
 ### Reseed instead of restore
 
@@ -147,7 +140,7 @@ fly ssh console -a syntrends-testnet -C "python -m demo.seed_testnet"
 2. `fly status -a syntrends-testnet` / `fly logs -a syntrends-testnet`
 3. If scaled to 0: `.\scripts\fly_testnet.ps1 ensure`
 4. If crash loop: `fly apps restart syntrends-testnet` then check `/ready`
-5. If DB down: fix Postgres (`fly postgres list`) — `/ready` stays 503 until DB returns
+5. If DB down: `fly mpg list` / MPG dashboard — `/ready` stays 503 until DB returns
 
 ### C. Bad deploy / empty chain
 
@@ -187,15 +180,15 @@ python -m demo.e2e_testnet --check-pause
 
 ## 6. Definition of “operable”
 
-- [ ] External uptime hits `/health` + `/ready`
-- [ ] At least one backup file exists from the last 7 days (or documented reseed-only policy)
-- [ ] Nightly E2E green (or open issue on fail)
-- [ ] Cost policy followed (always-on through Nov 1; park only with `park confirm`)
-- [ ] Incident steps above exercised once (tabletop or real)
+- [x] Repo uptime workflow hits `/health` + `/ready` (Actions `uptime.yml`; confirm first green after `FLY_API_TOKEN`)
+- [x] Snapshot: `backups/pre-postgres.json` restored onto MPG 2026-10-06; daily `backup-testnet.yml` now has `FLY_API_TOKEN`
+- [ ] Nightly E2E green (token set 2026-10-06; wait for first scheduled run)
+- [x] Cost policy: always-on; MPG Basic iad; park only with `park confirm`
+- [x] Restore path exercised (sftp put + `backup_snapshot.py restore` + restart → height 9 / 5 agents)
 
 ---
 
 ## After Phase L
 
 **Phase M** ✅ — publish SDKs + external testers: [`EXTERNAL_TESTERS.md`](EXTERNAL_TESTERS.md), [`PUBLISH.md`](PUBLISH.md).  
-**Phase N** ✅ — public launch ops: [`PUBLIC_LAUNCH.md`](PUBLIC_LAUNCH.md), `scripts/launch_check.py`.
+**Phase N** ✅ — gates + tag; **invites deferred** (operator-only). Log: [`OPS_LOG.md`](OPS_LOG.md).

@@ -10,6 +10,8 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 ### Changed
 
+- **Hosted testnet on Fly Managed Postgres (2026-10-06):** `DATABASE_URL` is MPG PgBouncer (cluster `syntrends-testnet-db` / `1zqyxr7gwz1rwp8m`), not sqlite in the VM. Snapshot `backups/pre-postgres.json` restored (height 9, 5 agents). Dockerfile does not bake `ENV DATABASE_URL`. Restore on the app VM via `fly ssh sftp put` — laptop cannot reach MPG. Log: [`docs/OPS_LOG.md`](docs/OPS_LOG.md).
+- **Phase N operator-only:** `launch_check --require-persona --require-packages` green; GitHub `FLY_API_TOKEN` + `SYNTRENDS_E2E_URL`; tag `testnet-v1.0` on `Surrplexie/SynTrends`. No external invites.
 - **Public testnet always-on:** Fly `min_machines_running = 1` / `auto_stop_machines = off`. Park is `scripts/fly_testnet.* park confirm` only. Marketing pages deep-link `https://testnet.syntrends.com/owners/`. GitHub probes: uptime every 15m, launch_check every 6h, nightly E2E, daily snapshot artifact.
 
 - **3rdPS API billing:** keys remain **free to issue** (including **2+ keys anytime** for the same signer, **one interval bill**) and still **expire** on a calendar. Invoices are **Curation Tokens (CT)** — pay per usage. Mixing 2+ product classes on one key is **n⁴**. Cutoff is **not** high usage; informational grounds are non-payment, illegal use, investigation, and similar. Compromised keys still need **wait** or **emergency** revoke; spare keys allow cutover without waiting. Chain explorer is **0 CT**. Unused keys owe **$0**. Spec (informational, not a contract): [`docs/CURATION_TOKENS.md`](docs/CURATION_TOKENS.md).

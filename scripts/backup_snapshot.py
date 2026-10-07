@@ -7,12 +7,13 @@ Uses DATABASE_URL (Postgres or SQLite). Does not talk to a running HTTP server.
     python scripts/backup_snapshot.py export -o backups/testnet.json
     python scripts/backup_snapshot.py restore -i backups/testnet.json
 
-    # After restore on Fly: restart the app so it reloads the snapshot
+    # Fly MPG: laptop usually cannot connect. Put the JSON on the VM:
+    #   fly ssh sftp put backups/pre-postgres.json /tmp/pre-postgres.json -a syntrends-testnet
+    #   fly ssh console -a syntrends-testnet --pty=false -C "python scripts/backup_snapshot.py restore -i /tmp/pre-postgres.json --yes"
     #   fly apps restart syntrends-testnet
-    # Or re-seed instead of restore:
-    #   fly ssh console -a syntrends-testnet -C "python -m demo.seed_testnet"
+    # Do not seed_testnet after a restore.
 
-See docs/OPS.md.
+See docs/OPS.md and docs/OPS_LOG.md.
 """
 
 from __future__ import annotations

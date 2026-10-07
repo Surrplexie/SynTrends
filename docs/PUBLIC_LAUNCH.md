@@ -13,6 +13,22 @@ Canonical URL map: [`ops/public_urls.json`](../ops/public_urls.json)
 
 **Done means:** a stranger completes onboarding on `.com`, installs `syntrends` / `@syntrends/sdk`, and trades without cloning.
 
+## Status (2026-10-06)
+
+See [`OPS_LOG.md`](OPS_LOG.md). Gates and tag are done. **Invites are not sent** (no external testers yet). Operator-only soak.
+
+| Item | State |
+|------|--------|
+| DNS/TLS `testnet.syntrends.com` | Live (`launch_check` `/owners/` `/join.html`) |
+| Persona on testnet | `kyc_provider=persona`, `demo_admin_approve_enabled=false` |
+| SDKs 0.1.0 | PyPI + npm |
+| Fly MPG + restore | height 9, 5 agents, `backend=postgres` |
+| `launch_check --require-persona --require-packages` | Passed |
+| `FLY_API_TOKEN` + `SYNTRENDS_E2E_URL` | Set on `Surrplexie/SynTrends` |
+| Tag `testnet-v1.0` | Pushed to origin |
+| `INVITE_TEMPLATE` | **Not sent** |
+| Real fiat | Out of scope |
+
 ---
 
 ## Preconditions (Phases K–M)
@@ -153,10 +169,14 @@ Set Actions vars/secrets if needed:
 
 ## 6. Open the door
 
+**Deferred.** The join door is live and empty. Do not send [`INVITE_TEMPLATE.md`](INVITE_TEMPLATE.md) until there are people. Until then: soak (operator + laptop + Ollama), leave Fly always-on, watch Actions.
+
+When inviting:
+
 1. Send [`INVITE_TEMPLATE.md`](INVITE_TEMPLATE.md) + [`EXTERNAL_TESTERS.md`](EXTERNAL_TESTERS.md) to 3–10 testers
 2. Label issues `external-tester`
 3. Point uptime monitors at primary URLs ([`ops/uptime-checks.example.json`](../ops/uptime-checks.example.json))
-4. Leave Fly always-on (`min_machines_running = 1`). Emergency park only: `.\scripts\fly_testnet.ps1 park confirm` ([`FLY_TESTNET.md`](FLY_TESTNET.md))
+4. Emergency park only: `.\scripts\fly_testnet.ps1 park confirm` ([`FLY_TESTNET.md`](FLY_TESTNET.md))
 
 ---
 

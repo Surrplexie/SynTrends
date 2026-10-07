@@ -1,6 +1,6 @@
 # Repository hygiene
 
-Maintainer checklist for **Surrplexie/st** — CI, branch protection, secrets, and deploy discipline.
+Maintainer checklist for **Surrplexie/SynTrends** — CI, branch protection, secrets, and deploy discipline.
 
 ---
 
@@ -22,7 +22,7 @@ Also: **Testnet uptime** every 15 min (`uptime.yml`), **Launch check** every 6h 
 | `FLY_API_TOKEN` | Wake scaled-to-zero machines |
 | `PERSONA_WEBHOOK_SECRET` | Signed KYC webhook for E2E once public beta uses Persona |
 
-**Optional variable:** `SYNTRENDS_E2E_URL` — prefer `https://testnet.syntrends.com` after Phase N DNS; default fallback is `https://syntrends-testnet.fly.dev`.
+**Optional variable:** `SYNTRENDS_E2E_URL` — **set 2026-10-06** to `https://testnet.syntrends.com` (fallback remains `https://syntrends-testnet.fly.dev`). `FLY_API_TOKEN` **set** the same day. See [`OPS_LOG.md`](OPS_LOG.md).
 
 Each run:
 
@@ -131,12 +131,7 @@ If credentials appeared in logs, chat, or `tmp.txt` — **rotate Postgres passwo
 
 ## Version tags (optional)
 
-When cutting a testnet milestone:
-
-```powershell
-git tag -a testnet-v1.0 -m "Public testnet E2E + 4h soak verified"
-git push origin testnet-v1.0
-```
+`testnet-v1.0` **exists on origin** (pushed 2026-10-06). Do not retag. New milestones get a new name.
 
 Use semantic tags when publishing SDKs to PyPI/npm.
 

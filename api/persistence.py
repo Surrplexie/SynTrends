@@ -6,15 +6,35 @@ import json
 import sqlite3
 import time
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qsl, unquote, urlencode, urlparse, urlunparse
+
+
+def _normalize_database_url(url: str | None) -> str | None:
+    """Strip quotes/whitespace Fly+PowerShell often bake into secrets."""
+    if not url:
+        return None
+    u = url.strip().strip('"').strip("'")
+    if u.lower().startswith("database_url="):
+        u = u.split("=", 1)[1].strip().strip('"').strip("'")
+    return u or None
+
+
+def _pg_connect_url(url: str) -> str:
+    parsed = urlparse(url)
+    host = parsed.hostname or ""
+    if not host or ".." in host:
+        raise ValueError("DATABASE_URL hostname is empty or invalid; reset the Fly secret from the MPG dashboard")
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query.setdefault("sslmode", "require")
+    return urlunparse(parsed._replace(query=urlencode(query)))
 
 
 class Persistence:
     """Single-row JSON snapshot store. Disabled when ``database_url`` is None."""
 
     def __init__(self, database_url: str | None) -> None:
-        self.database_url = database_url
-        self._is_pg = bool(database_url and database_url.startswith("postgres"))
+        self.database_url = _normalize_database_url(database_url)
+        self._is_pg = bool(self.database_url and self.database_url.startswith("postgres"))
 
     @property
     def enabled(self) -> bool:
@@ -49,7 +69,7 @@ class Persistence:
     def _connect_pg(self):
         import psycopg
 
-        conn = psycopg.connect(self.database_url)
+        conn = psycopg.connect(_pg_connect_url(self.database_url))
         conn.autocommit = True
         self._ensure_schema_pg(conn)
         return conn
@@ -62,7 +82,7 @@ class Persistence:
         if self._is_pg:
             import psycopg
 
-            with psycopg.connect(self.database_url) as conn:
+            with psycopg.connect(_pg_connect_url(self.database_url)) as conn:
                 with conn.cursor() as cur:
                     self._ensure_schema_pg(conn)
                     cur.execute(
@@ -89,7 +109,7 @@ class Persistence:
         if self._is_pg:
             import psycopg
 
-            with psycopg.connect(self.database_url) as conn:
+            with psycopg.connect(_pg_connect_url(self.database_url)) as conn:
                 with conn.cursor() as cur:
                     self._ensure_schema_pg(conn)
                     cur.execute("SELECT payload FROM app_snapshot WHERE id = 1")
@@ -115,7 +135,7 @@ class Persistence:
             if self._is_pg:
                 import psycopg
 
-                with psycopg.connect(self.database_url) as conn:
+                with psycopg.connect(_pg_connect_url(self.database_url)) as conn:
                     with conn.cursor() as cur:
                         cur.execute("SELECT 1")
                         cur.fetchone()
@@ -138,7 +158,7 @@ class Persistence:
             if self._is_pg:
                 import psycopg
 
-                with psycopg.connect(self.database_url) as conn:
+                with psycopg.connect(_pg_connect_url(self.database_url)) as conn:
                     with conn.cursor() as cur:
                         self._ensure_schema_pg(conn)
                         cur.execute("SELECT updated_at FROM app_snapshot WHERE id = 1")
@@ -187,6 +207,4 @@ class Persistence:
 
 
 def database_url_from_env(env_value: str | None) -> str | None:
-    if not env_value:
-        return None
-    return env_value.strip()
+    return _normalize_database_url(env_value)

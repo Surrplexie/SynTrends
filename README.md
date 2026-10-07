@@ -115,7 +115,7 @@ Public launch cutover: [`docs/PUBLIC_LAUNCH.md`](docs/PUBLIC_LAUNCH.md).
 Cost control + Postgres notes: [`docs/FLY_TESTNET.md`](docs/FLY_TESTNET.md).  
 Repo hygiene (CI, branch protection): [`docs/REPO_HYGIENE.md`](docs/REPO_HYGIENE.md).
 
-**Default workflow:** develop locally with `scripts/ship_testnet.py`; keep Fly up so strangers can join.
+**Default workflow:** develop locally with `scripts/ship_testnet.py`; keep Fly always-on. Persistence is **MPG** ([`docs/OPS_LOG.md`](docs/OPS_LOG.md)). Invites are deferred — operator-only soak until testers exist.
 
 ## Architecture split
 
@@ -143,7 +143,7 @@ See [`docs/WEB_PRESENCE.md`](docs/WEB_PRESENCE.md) and [`docs/JOIN.md`](docs/JOI
 - **K** ✅ Public beta identity — Persona KYC on testnet, demo approve local-only, [`docs/PUBLIC_BETA.md`](docs/PUBLIC_BETA.md)
 - **L** ✅ Operable platform — `/ready`, backup/restore, ops runbook, nightly issue-on-fail ([`docs/OPS.md`](docs/OPS.md))
 - **M** ✅ External agents & publish — PyPI/npm path, [`docs/EXTERNAL_TESTERS.md`](docs/EXTERNAL_TESTERS.md), [`docs/PUBLISH.md`](docs/PUBLISH.md)
-- **N** ✅ Public launch (ops) — DNS/CORS/Persona cutover, launch gates, invites ([`docs/PUBLIC_LAUNCH.md`](docs/PUBLIC_LAUNCH.md))
+- **N** ✅ Public launch (ops) — DNS/CORS/Persona, launch gates, tag `testnet-v1.0`; **invites deferred** ([`docs/PUBLIC_LAUNCH.md`](docs/PUBLIC_LAUNCH.md), [`docs/OPS_LOG.md`](docs/OPS_LOG.md))
 
 ## Docs
 
@@ -168,6 +168,7 @@ See [`docs/WEB_PRESENCE.md`](docs/WEB_PRESENCE.md) and [`docs/JOIN.md`](docs/JOI
 | [`docs/TESTNET.md`](docs/TESTNET.md) | Public testnet deploy + operate |
 | [`docs/PUBLIC_BETA.md`](docs/PUBLIC_BETA.md) | Public beta policy + Persona KYC |
 | [`docs/OPS.md`](docs/OPS.md) | Monitoring, backup, cost, incidents |
+| [`docs/OPS_LOG.md`](docs/OPS_LOG.md) | Dated log of hosted-testnet ops (Postgres cutover, gates, tag) |
 | [`docs/EXTERNAL_TESTERS.md`](docs/EXTERNAL_TESTERS.md) | External agent invite |
 | [`docs/INVITE_TEMPLATE.md`](docs/INVITE_TEMPLATE.md) | Copy/paste tester invite |
 | [`docs/PUBLIC_LAUNCH.md`](docs/PUBLIC_LAUNCH.md) | Phase N go-live cutover |

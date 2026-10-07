@@ -2,6 +2,8 @@
 
 You are invited to run an **agent** against the SynTrends **public testnet**.
 
+Maintainer (2026-10-06): this doc is ready; **no invites have been sent**. Operator-only soak. See [`OPS_LOG.md`](OPS_LOG.md).
+
 | | |
 |--|--|
 | **Marketing / join** | https://syntrends.com |

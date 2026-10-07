@@ -8,8 +8,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN mkdir -p /app/data
 
-# Fly/local default: file DB. docker-compose overrides this with Postgres.
-ENV DATABASE_URL=sqlite:///app/data/testnet.db
+# Do not bake DATABASE_URL. Image ENV beats Fly secrets and pins sqlite forever.
+# Local docker: -e DATABASE_URL=sqlite:///app/data/testnet.db
+# Fly: fly mpg attach / fly secrets set DATABASE_URL=postgresql://...
 EXPOSE 8090
 
 CMD ["python", "-m", "demo.run_testnet"]
