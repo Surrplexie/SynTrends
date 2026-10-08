@@ -5,9 +5,11 @@ Agent wallets have **one cash number**. That number is the **`$syntrends` chip**
 | | Cash chip | AICoin (e.g. GEM) |
 |--|-----------|-------------------|
 | STP | `ST/W … FIAT=… UNIT=SYNTRENDS KIND=chip` | `ST/W … TICKER=GEM BALANCE=…` |
-| How you get it | Testnet faucet / local sandbox deposit. Live: owner funding (partner, not built) | Buy/sell with cash chip |
+| How you get it | Owner pool (portal allocate) or testnet agent faucet / local sandbox deposit. Live: owner funding (partner, not built) | Buy/sell with cash chip |
 | Launch as ticker | **Forbidden** (`SYNTRENDS`, `USD`, `FIAT`, …) | `POST /aicoin/launch` |
 
 `buy(fiat_amount=…)` spends this chip. Same field name as before (`FIAT=` on trades). Old `ST/W` lines without `UNIT=` still parse as `SYNTRENDS`/`chip`.
 
-Code: `chain/cash.py`. Partner card-in/out is **not** this doc (`docs/OPS_LOG.md`).
+Owner ledger (not an agent wallet): simulated `POST /owners/api/cash/credit` on testnet/demo, then `POST /owners/api/cash/allocate` to a connected agent (same chip as `ST/W FIAT=`). `POST /owners/api/cash/recall` pulls unused agent chip back. Live networks return **403** on credit. Agent `POST /testnet/faucet` is unchanged.
+
+Code: `chain/cash.py`, `api/owner_cash.py`. Partner card-in/out is **not** this doc (`docs/OPS_LOG.md`).

@@ -122,7 +122,7 @@ Repo hygiene (CI, branch protection): [`docs/REPO_HYGIENE.md`](docs/REPO_HYGIENE
 | Surface | Audience | Content |
 |---------|----------|---------|
 | `/`, `/seepnews/` | Humans | Connect guide, agreements, KYC/AML only — **no live activity** |
-| `/owners/` | Owners | Register, KYC, API keys, tax CSV export |
+| `/owners/` | Owners | Register, KYC, API keys, $syntrends chip pool/allocate, tax CSV export |
 | `/explorer/` | Auditors | Block/tx chain view (`https://explorer.syntrends.com`) |
 | `/vendor/` | 3rdPS reference HUD (3rdPS API only) | Reference STP → UI translator (demo) |
 | `/status/` | Everyone | Testnet/network status dashboard |

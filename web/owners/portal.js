@@ -92,6 +92,7 @@ function renderStatus(owner) {
       : "<li style='color:var(--muted)'>None connected yet</li>";
   }
   renderAgentControls(agentRows);
+  refreshOwnerCash();
   const connectBtn = document.getElementById("connect-btn");
   if (connectBtn) connectBtn.disabled = !owner.can_connect_agent;
   const taxBtn = document.getElementById("tax-export-btn");
@@ -123,6 +124,117 @@ async function onResumeAgent(agentId) {
     msg.textContent = `${agentId} resumed — writes enabled.`;
     msg.className = "success";
     await refreshMe();
+  } catch (ex) {
+    msg.textContent = ex.message;
+    msg.className = "error";
+  }
+}
+
+function renderOwnerCash(view) {
+  const bal = document.getElementById("owner-cash-balance");
+  if (bal) bal.textContent = String(view.owner_balance ?? 0);
+  const creditBtn = document.getElementById("owner-cash-credit-btn");
+  if (creditBtn) {
+    creditBtn.disabled = !view.simulated_credit_enabled;
+    creditBtn.textContent = view.simulated_credit_enabled
+      ? `Simulated credit (${view.credit_amount} $syntrends)`
+      : "Simulated credit (off on this network)";
+  }
+  const move = document.getElementById("owner-cash-move");
+  const box = document.getElementById("owner-cash-agents");
+  const agents = view.agents || [];
+  if (move) move.classList.toggle("hidden", agents.length === 0);
+  if (box) {
+    if (agents.length === 0) {
+      box.classList.add("hidden");
+      box.innerHTML = "";
+    } else {
+      box.classList.remove("hidden");
+      box.innerHTML = agents
+        .map(
+          (a) =>
+            `<div class="agent-row"><code>${a.agent_id}</code><span>${a.cash ?? 0} $syntrends</span></div>`
+        )
+        .join("");
+    }
+  }
+  const recent = document.getElementById("owner-cash-recent");
+  if (recent) {
+    const rows = view.recent || [];
+    recent.innerHTML = rows.length
+      ? rows
+          .slice()
+          .reverse()
+          .slice(0, 8)
+          .map((e) => {
+            const who = e.agent_id ? ` → ${e.agent_id}` : "";
+            return `<li>${e.kind} ${e.amount}${who}</li>`;
+          })
+          .join("")
+      : "";
+  }
+}
+
+async function refreshOwnerCash() {
+  const box = document.getElementById("owner-cash-balance");
+  if (!box) return;
+  try {
+    const view = await api("/cash");
+    renderOwnerCash(view);
+  } catch {
+    // ignore until logged in
+  }
+}
+
+function cashMoveBody() {
+  return {
+    agent_id: document.getElementById("cash-agent-id").value.trim(),
+    amount: Number(document.getElementById("cash-amount").value),
+  };
+}
+
+async function onOwnerCashCredit() {
+  const msg = document.getElementById("owner-cash-msg");
+  msg.textContent = "";
+  try {
+    const view = await api("/cash/credit", { method: "POST", body: "{}" });
+    renderOwnerCash(view);
+    msg.textContent = `Owner pool now ${view.owner_balance} $syntrends (simulated).`;
+    msg.className = "success";
+  } catch (ex) {
+    msg.textContent = ex.message;
+    msg.className = "error";
+  }
+}
+
+async function onOwnerCashAllocate() {
+  const msg = document.getElementById("owner-cash-msg");
+  msg.textContent = "";
+  try {
+    const view = await api("/cash/allocate", {
+      method: "POST",
+      body: JSON.stringify(cashMoveBody()),
+    });
+    renderOwnerCash(view);
+    msg.textContent = "Allocated chip to agent.";
+    msg.className = "success";
+  } catch (ex) {
+    msg.textContent = ex.message;
+    msg.className = "error";
+  }
+}
+
+async function onOwnerCashRecall() {
+  const msg = document.getElementById("owner-cash-msg");
+  msg.textContent = "";
+  try {
+    const view = await api("/cash/recall", {
+      method: "POST",
+      body: JSON.stringify(cashMoveBody()),
+    });
+    renderOwnerCash(view);
+    msg.textContent = "Recalled unused chip to owner pool.";
+    msg.className = "success";
   } catch (ex) {
     msg.textContent = ex.message;
     msg.className = "error";
@@ -406,6 +518,9 @@ async function init() {
   document.getElementById("demo-approve-kyc")?.addEventListener("click", onDemoApproveKyc);
   document.getElementById("refresh-kyc-btn")?.addEventListener("click", onRefreshKyc);
   document.getElementById("connect-form")?.addEventListener("submit", onConnectAgent);
+  document.getElementById("owner-cash-credit-btn")?.addEventListener("click", onOwnerCashCredit);
+  document.getElementById("owner-cash-allocate-btn")?.addEventListener("click", onOwnerCashAllocate);
+  document.getElementById("owner-cash-recall-btn")?.addEventListener("click", onOwnerCashRecall);
   document.getElementById("tax-export-btn")?.addEventListener("click", onTaxExport);
   document.getElementById("logout-btn")?.addEventListener("click", logout);
 

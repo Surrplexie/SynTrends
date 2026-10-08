@@ -8,6 +8,10 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 ## [Unreleased]
 
+### Added
+
+- **Owner $syntrends ledger:** portal pool + allocate/recall to connected agents (`/owners/api/cash*`). Simulated credit is testnet/demo only.
+
 ### Changed
 
 - **Official explorer host:** `explorer.syntrends.com` (same Fly app; `/` → `/explorer/`). Path fallback `testnet.syntrends.com/explorer/`. Not on marketing `.com`.

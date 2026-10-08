@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from .auth import AuthError
 from .agent_routes import get_owner_session, get_service
 from .kyc_provider import KYCProviderError, WebhookVerificationError
+from .owner_cash import OwnerCashError
 from .owners import AGREEMENTS_VERSION, KYCError, KYCStatus, OwnerAuthError, OwnerError
 from .tax import render_tax_csv
 from .syntrendrules import SYNTRENDRULES_VERSION, SyntrendrulesError
@@ -63,6 +64,15 @@ class SyntrendrulesAcceptBody(BaseModel):
 
 class AdminApproveBody(BaseModel):
     owner_id: str
+
+
+class OwnerCashCreditBody(BaseModel):
+    amount: float | None = Field(default=None, gt=0)
+
+
+class OwnerCashMoveBody(BaseModel):
+    agent_id: str
+    amount: float = Field(gt=0)
 
 
 @router.post("/register")
@@ -124,6 +134,8 @@ def portal_config():
         "kyc_provider": svc.kyc.name,
         "demo_admin_approve_enabled": demo_approve,
         "faucet_enabled": svc.settings.faucet_allowed,
+        "owner_cash_credit_enabled": svc.owner_simulated_credit_allowed(),
+        "cash_unit": "SYNTRENDS",
         "testnet": svc.settings.is_testnet,
         "public_beta": svc.settings.is_testnet and not demo_approve,
     }
@@ -294,6 +306,51 @@ def accept_seeprules(body: SeeprulesAcceptBody, authorization: Annotated[str | N
     except SeeprulesError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return svc.owners.public_view(updated)
+
+
+@router.get("/cash")
+def owner_cash(authorization: Annotated[str | None, Header()] = None):
+    """Owner $syntrends chip pool and per-agent allocations."""
+    owner = get_owner_session(authorization)
+    svc = get_service()
+    return svc.owner_cash_view(owner)
+
+
+@router.post("/cash/credit")
+def owner_cash_credit(body: OwnerCashCreditBody, authorization: Annotated[str | None, Header()] = None):
+    """Simulated owner chip (testnet/demo). Live networks reject this."""
+    owner = get_owner_session(authorization)
+    svc = get_service()
+    try:
+        return svc.owner_cash_credit(owner, body.amount)
+    except OwnerCashError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post("/cash/allocate")
+def owner_cash_allocate(body: OwnerCashMoveBody, authorization: Annotated[str | None, Header()] = None):
+    """Move owner chip into a connected agent's wallet."""
+    owner = get_owner_session(authorization)
+    svc = get_service()
+    try:
+        return svc.owner_cash_allocate(owner, body.agent_id, body.amount)
+    except OwnerCashError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    except OwnerError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/cash/recall")
+def owner_cash_recall(body: OwnerCashMoveBody, authorization: Annotated[str | None, Header()] = None):
+    """Pull unused agent chip back to the owner pool (not AICoins)."""
+    owner = get_owner_session(authorization)
+    svc = get_service()
+    try:
+        return svc.owner_cash_recall(owner, body.agent_id, body.amount)
+    except OwnerCashError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    except OwnerError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.post("/agents/connect")

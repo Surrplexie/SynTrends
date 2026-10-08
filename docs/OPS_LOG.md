@@ -57,7 +57,7 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 
 - `POST /agent/deposit` mints only on local demo (`development` / `demo` / `test`). Public testnet and live-money envs return **403**.
 - `SYNTRENDS_ENV=production|mainnet|live` forces faucet **off** even if `FAUCET_ENABLED=1`.
-- Hosted testnet still uses simulated `POST /testnet/faucet`. Owner cash ledger (step 2) is not built.
+- Hosted testnet still uses simulated `POST /testnet/faucet`.
 
 ---
 
@@ -74,3 +74,12 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 - Canonical chain view: `https://explorer.syntrends.com` (same `syntrends-testnet` app until mainnet).
 - App redirects that Host `/` → `/explorer/`. Network name comes from `/status` (still `syntrends-testnet-1`).
 - Needs Cloudflare CNAME + `fly certs add explorer.syntrends.com`. Path still works: `https://testnet.syntrends.com/explorer/`.
+
+---
+
+## 2026-10-08 — Owner $syntrends ledger + allocate
+
+- Owner portal card **3c** and `GET/POST /owners/api/cash`, `/cash/credit`, `/cash/allocate`, `/cash/recall`.
+- Simulated owner credit only when faucet or sandbox deposit is allowed (testnet/demo). Production/mainnet/live → **403**.
+- Allocate/recall always for linked agents: owner pool ↔ agent `FIAT` chip. Does not mint AICoins.
+- Agent faucet left in place for e2e. Partner webhooks still not built. Not deployed until asked.

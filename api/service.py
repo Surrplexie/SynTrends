@@ -7,6 +7,7 @@ import time
 
 from chain.aicoin import AICoinError
 from chain.cash import CASH_KIND, CASH_UNIT, is_reserved_cash_ticker, reserved_ticker_error
+from chain.wallet import InsufficientBalance
 from chain.clock import ManualClock
 from chain.engine import SynTrendsDemo
 from chain.freeze import FreezeState
@@ -17,6 +18,7 @@ from chain.stp import (
     STPEmitter,
     encode_error,
     encode_seepnews,
+    encode_wallet_fiat,
     filter_snapshot_lines,
     snapshot_from_lines,
 )
@@ -41,6 +43,7 @@ from .curation import (
 from .broker import STPStreamBroker
 from .config import Settings
 from .kyc_provider import KYCProvider, create_kyc_provider
+from .owner_cash import OwnerCashError, OwnerCashLedger
 from .owners import KYCError, Owner, OwnerError, OwnerRegistry
 from .persistence import Persistence
 from .seeprules import ATTESTATION_TEXT, SEEPRULES_VERSION, SeeprulesRegistry
@@ -93,6 +96,7 @@ class SynTrendsAPIService:
         self.seeprules = SeeprulesRegistry()
         self.syntrendrules = SyntrendrulesRegistry()
         self.agent_pause = AgentPauseRegistry()
+        self.owner_cash = OwnerCashLedger()
         self.require_owner_kyc = require_owner_kyc
         self.persistence = persistence
         self.kyc = kyc_provider or create_kyc_provider(self.settings)
@@ -138,6 +142,7 @@ class SynTrendsAPIService:
             "seeprules": self.seeprules.export_state(),
             "syntrendrules": self.syntrendrules.export_state(),
             "agent_pause": self.agent_pause.export_state(),
+            "owner_cash": self.owner_cash.export_state(),
         }
 
     def import_snapshot(self, data: dict) -> None:
@@ -150,6 +155,7 @@ class SynTrendsAPIService:
         self.seeprules.import_state(data.get("seeprules", {}))
         self.syntrendrules.import_state(data.get("syntrendrules", {}))
         self.agent_pause.import_state(data.get("agent_pause", {}))
+        self.owner_cash.import_state(data.get("owner_cash", {}))
         agent = self.keys.first_agent_key()
         thirdps_key = self.keys.first_thirdps_key()
         if agent:
@@ -265,6 +271,81 @@ class SynTrendsAPIService:
 
     def agent_pause_status_for_owner(self, owner: Owner) -> list[dict]:
         return [self.agent_pause.public_status(aid) for aid in owner.agent_ids]
+
+    def owner_simulated_credit_allowed(self) -> bool:
+        return self.settings.faucet_allowed or self.settings.sandbox_deposit_allowed
+
+    def owner_cash_view(self, owner: Owner) -> dict:
+        agents = []
+        for aid in owner.agent_ids:
+            st = self.agent_pause.public_status(aid)
+            st["cash"] = round(self.demo.wallets.fiat_balance(aid), 8)
+            agents.append(st)
+        return {
+            "unit": CASH_UNIT,
+            "kind": CASH_KIND,
+            "display": "$syntrends",
+            "owner_balance": round(self.owner_cash.balance(owner.owner_id), 8),
+            "simulated_credit_enabled": self.owner_simulated_credit_allowed(),
+            "credit_amount": self.settings.faucet_amount,
+            "credit_cooldown_seconds": self.settings.faucet_cooldown_seconds,
+            "agents": agents,
+            "recent": [e.public() for e in self.owner_cash.entries_for(owner.owner_id)],
+        }
+
+    def owner_cash_credit(self, owner: Owner, amount: float | None = None) -> dict:
+        if not self.owner_simulated_credit_allowed():
+            raise OwnerCashError(
+                "simulated owner credit is off on this network; live money uses partner funding",
+                status_code=403,
+            )
+        amt = float(self.settings.faucet_amount if amount is None else amount)
+        if amt < 5:
+            raise OwnerCashError("minimum simulated credit is 5")
+        if amt > self.settings.faucet_amount + 1e-9:
+            raise OwnerCashError(f"maximum simulated credit is {self.settings.faucet_amount:g}")
+        now = time.time()
+        last = self.owner_cash.credit_last(owner.owner_id)
+        wait = self.settings.faucet_cooldown_seconds
+        if now - last < wait:
+            remaining = int(wait - (now - last))
+            raise OwnerCashError(f"owner credit cooldown — try again in {remaining}s")
+        with self._lock:
+            self.owner_cash.credit(owner.owner_id, amt, note="simulated")
+            self.persist()
+            return self.owner_cash_view(owner)
+
+    def owner_cash_allocate(self, owner: Owner, agent_id: str, amount: float) -> dict:
+        agent_id = self._require_owner_agent(owner, agent_id)
+        if amount <= 0:
+            raise OwnerCashError("allocate amount must be positive")
+        with self._lock:
+            self.owner_cash.debit_owner(owner.owner_id, amount)
+            if agent_id not in self.demo.agents:
+                self.demo.register_agent(agent_id)
+            self.demo.deposit_fiat(agent_id, amount)
+            self.owner_cash.record_allocate(owner.owner_id, agent_id, amount)
+            lines = self.emitter.on_deposit(agent_id, amount)
+            self._emit_and_publish(lines)
+            return self.owner_cash_view(owner)
+
+    def owner_cash_recall(self, owner: Owner, agent_id: str, amount: float) -> dict:
+        agent_id = self._require_owner_agent(owner, agent_id)
+        if amount <= 0:
+            raise OwnerCashError("recall amount must be positive")
+        with self._lock:
+            try:
+                self.demo.wallets.debit_fiat(agent_id, amount)
+            except InsufficientBalance as exc:
+                raise OwnerCashError(str(exc)) from exc
+            self.owner_cash.credit_owner_only(owner.owner_id, amount)
+            self.owner_cash.record_recall(owner.owner_id, agent_id, amount)
+            line = self.emitter.emit(
+                encode_wallet_fiat(agent_id, self.demo.wallets.fiat_balance(agent_id))
+            )
+            self._publish_lines([line])
+            self.persist()
+            return self.owner_cash_view(owner)
 
     def _assert_agent_writes_allowed(self, agent_id: str) -> None:
         blocked, msg = self.agent_pause.write_block_reason(agent_id)

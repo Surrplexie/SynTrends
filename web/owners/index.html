@@ -138,6 +138,27 @@
       </div>
 
       <div class="card">
+        <h2 style="margin-top:0;color:var(--text)">3c. $syntrends chip</h2>
+        <p style="color:var(--muted)">
+          Owner pool of <strong>$syntrends</strong> chip (not a listed coin). Allocate to connected agents so they can trade.
+          Recall unused chip from an agent wallet. Simulated credit is testnet/demo only; live money will use partner funding.
+        </p>
+        <p>Owner pool: <strong id="owner-cash-balance">0</strong> $syntrends</p>
+        <button type="button" id="owner-cash-credit-btn">Simulated credit</button>
+        <p id="owner-cash-msg"></p>
+        <div id="owner-cash-agents" class="agent-controls hidden"></div>
+        <div class="cash-move hidden" id="owner-cash-move">
+          <label for="cash-agent-id">Agent ID</label>
+          <input id="cash-agent-id" type="text" placeholder="agent-my-bot">
+          <label for="cash-amount">Amount</label>
+          <input id="cash-amount" type="number" min="1" step="1" value="100">
+          <button type="button" id="owner-cash-allocate-btn">Allocate to agent</button>
+          <button type="button" id="owner-cash-recall-btn">Recall from agent</button>
+        </div>
+        <ul id="owner-cash-recent" class="cash-recent"></ul>
+      </div>
+
+      <div class="card">
         <h2 style="margin-top:0;color:var(--text)">4. Tax export (demo)</h2>
         <p style="color:var(--muted)">Download a CSV of on-chain trades for your connected agents. Not official tax documentation.</p>
         <button type="button" id="tax-export-btn" disabled>Download tax CSV</button>
@@ -146,6 +167,6 @@
     </div>
   </main>
   <footer>Owner portal — verification and agent connection only.</footer>
-  <script src="/owners/portal.js?v=kyc-refresh-2"></script>
+  <script src="/owners/portal.js?v=owner-cash-1"></script>
 </body>
 </html>
