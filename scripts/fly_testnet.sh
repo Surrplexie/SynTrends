@@ -127,12 +127,15 @@ case "$cmd" in
     ;;
   certs)
     require_fly
-    echo "Requesting certificate for ${CERT_HOST} on ${APP} …"
-    fly certs add "$CERT_HOST" -a "$APP" || true
-    fly certs show "$CERT_HOST" -a "$APP"
-    echo ""
-    echo "Point DNS for ${CERT_HOST} at this app, then: fly certs check ${CERT_HOST} -a ${APP}"
-    echo "Until DNS is live, health falls back to ${FALLBACK_URL}"
+    for h in "${CERT_HOST}" explorer.syntrends.com explorer.testnet.syntrends.com; do
+      echo "Requesting certificate for ${h} on ${APP} …"
+      fly certs add "$h" -a "$APP" || true
+      fly certs show "$h" -a "$APP" || true
+      echo ""
+    done
+    echo "Cloudflare/DNS: CNAME explorer.syntrends.com -> syntrends-testnet.fly.dev"
+    echo "Then: fly certs check explorer.syntrends.com -a ${APP}"
+    echo "Until DNS is live, path explorer stays at ${URL}/explorer/"
     ;;
   park)
     require_fly

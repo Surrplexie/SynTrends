@@ -117,7 +117,7 @@ def check_http_surface(base: str) -> list[str]:
 def check_html_surface(base: str) -> list[str]:
     """Owner portal + status dashboard must not 404 if DNS is live."""
     failures: list[str] = []
-    for path in ("/owners/", "/status/", "/join.html"):
+    for path in ("/owners/", "/status/", "/join.html", "/explorer/"):
         code, body = _get_status(f"{base}{path}")
         if code == 200:
             _ok(f"{path} HTTP 200")
@@ -242,6 +242,17 @@ def main() -> int:
         failures.extend(check_http_surface(b))
         failures.extend(check_html_surface(b))
         failures.extend(check_owners_config(b, args.require_persona))
+
+    explorer = "https://explorer.syntrends.com/explorer/"
+    print(f"\n-- {explorer} --")
+    ex_code, ex_body = _get_status(explorer)
+    if ex_code == 200:
+        _ok("explorer.syntrends.com HTTP 200")
+    else:
+        _warn(
+            f"explorer.syntrends.com HTTP {ex_code} — add DNS/CNAME + fly certs; "
+            f"path explorer remains on {primary}/explorer/"
+        )
 
     if not args.skip_packages:
         print("\n-- packages --")

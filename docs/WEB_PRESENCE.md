@@ -47,7 +47,8 @@ Single Fly origin behind a custom domain (path-based portal + API):
 
 ```
 syntrends.com              → marketing / join (links to testnet owners)
-testnet.syntrends.com      → owner portal + agent API + status + explorer
+testnet.syntrends.com      → owner portal + agent API + status + /explorer/
+explorer.syntrends.com     → official chain view (same app; / → /explorer/)
 syntrends-testnet.fly.dev  → ops fallback (same app)
 ```
 

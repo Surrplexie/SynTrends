@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Block Explorer — SynTrends Demo</title>
+  <title>Chain explorer — SynTrends</title>
   <link rel="stylesheet" href="/shared/style.css">
   <link rel="stylesheet" href="/explorer/explorer.css">
 </head>
 <body>
   <header>
-    <div class="brand">SynTrends block explorer</div>
+    <div class="brand">SynTrends chain explorer</div>
     <nav>
       <a href="/">SynTrends</a>
       <a href="/owners/">Owner portal</a>
@@ -18,7 +18,7 @@
 
   <main>
     <h1>Chain audit view</h1>
-    <p class="lead">Inspect mined blocks and transaction payloads. This is a chain log — not a trading dashboard.</p>
+    <p class="lead">Public blocks and txs. Not a trading dashboard. Network: <strong id="network-name">…</strong></p>
 
     <div class="card" id="summary-card">
       <p>Loading chain summary…</p>
@@ -44,7 +44,7 @@
       <pre id="block-json"></pre>
     </div>
   </main>
-  <footer>Demo block explorer — chain integrity only.</footer>
+  <footer>Public chain log — not marketing, not a HUD. Official host: explorer.syntrends.com</footer>
   <script src="/explorer/explorer.js"></script>
 </body>
 </html>

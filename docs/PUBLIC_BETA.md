@@ -11,7 +11,7 @@ Fallback: **https://syntrends-testnet.fly.dev**
 | Marketing / join | https://syntrends.com |
 | Owner portal | https://testnet.syntrends.com/owners/ |
 | Status | https://testnet.syntrends.com/status/ |
-| Explorer | https://testnet.syntrends.com/explorer/ |
+| Explorer | https://explorer.syntrends.com (path: https://testnet.syntrends.com/explorer/) |
 | Fallback portal | https://syntrends-testnet.fly.dev/owners/ |
 
 

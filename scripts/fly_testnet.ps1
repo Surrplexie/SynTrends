@@ -22,7 +22,8 @@ param(
     [string]$Url = $(if ($env:SYNTRENDS_URL) { $env:SYNTRENDS_URL } else { "https://testnet.syntrends.com" }),
     [string]$FallbackUrl = "https://syntrends-testnet.fly.dev",
     [string]$Config = "deploy/fly.testnet.toml",
-    [string]$CertHost = "testnet.syntrends.com"
+    [string]$CertHost = "testnet.syntrends.com",
+    [string[]]$CertHosts = @("testnet.syntrends.com", "explorer.syntrends.com", "explorer.testnet.syntrends.com")
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,7 +47,7 @@ Fly testnet helpers ($App)
   ensure   scale count 1 (always-on); wait for health
   start    alias of ensure
   init     FIRST TIME: create Fly app + Postgres, CORS, deploy, seed
-  certs    fly certs add/show for $CertHost (app must already exist)
+  certs    fly certs add/show for testnet + explorer hosts (app must already exist)
   deploy   fly deploy (creates the Fly app if it is missing)
   park     EMERGENCY: scale to 0 - requires: park confirm
 
@@ -242,13 +243,17 @@ switch ($Command) {
             Write-Host "App $App does not exist. Run .\scripts\fly_testnet.ps1 init first." -ForegroundColor Yellow
             exit 1
         }
-        Write-Host "Requesting certificate for $CertHost on $App ..."
-        fly certs add $CertHost -a $App 2>&1 | Out-Host
-        fly certs show $CertHost -a $App
-        Write-Host ""
-        Write-Host "Point DNS for $CertHost at this app (A/AAAA or CNAME from fly certs output),"
-        Write-Host "then: fly certs check $CertHost -a $App"
-        Write-Host "Until DNS is live, health falls back to $FallbackUrl"
+        $hosts = if ($CertHost -and $CertHost -ne "testnet.syntrends.com") { @($CertHost) } else { $CertHosts }
+        foreach ($h in $hosts) {
+            Write-Host "Requesting certificate for $h on $App ..."
+            fly certs add $h -a $App 2>&1 | Out-Host
+            fly certs show $h -a $App
+            Write-Host ""
+        }
+        Write-Host "Cloudflare/DNS: CNAME explorer.syntrends.com -> syntrends-testnet.fly.dev"
+        Write-Host "  (same A/AAAA as testnet.syntrends.com if you already pointed that host)."
+        Write-Host "Then: fly certs check explorer.syntrends.com -a $App"
+        Write-Host "Until DNS is live, path explorer stays at $Url/explorer/"
     }
     "park" {
         Require-Fly

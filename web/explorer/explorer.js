@@ -15,6 +15,19 @@ function shortHash(h) {
   return `${h.slice(0, 10)}…${h.slice(-6)}`;
 }
 
+async function loadNetwork() {
+  try {
+    const st = await fetch("/status").then((r) => r.json());
+    const el = document.getElementById("network-name");
+    if (el) {
+      el.textContent = st.network || st.env || "unknown";
+    }
+  } catch {
+    const el = document.getElementById("network-name");
+    if (el) el.textContent = "unreachable";
+  }
+}
+
 async function loadSummary() {
   const s = await fetchJson("/summary");
   const card = document.getElementById("summary-card");
@@ -53,6 +66,7 @@ async function showBlock(index) {
 
 async function init() {
   try {
+    await loadNetwork();
     await loadSummary();
     await loadBlocks();
   } catch (err) {

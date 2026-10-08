@@ -6,10 +6,12 @@ from contextlib import asynccontextmanager
 from dataclasses import replace
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+
+from .hostnames import is_explorer_host
 
 from . import agent_routes
 from .config import Settings
@@ -79,6 +81,13 @@ def create_app(
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
+        @app.middleware("http")
+        async def explorer_host_root(request: Request, call_next):
+            """explorer.syntrends.com / → /explorer/ (official chain view)."""
+            if is_explorer_host(request.headers.get("host")) and request.url.path in ("", "/"):
+                return RedirectResponse(url="/explorer/", status_code=307)
+            return await call_next(request)
 
     app.include_router(agent_routes.router)
     app.include_router(testnet_router)

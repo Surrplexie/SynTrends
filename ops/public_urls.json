@@ -11,13 +11,14 @@
     "fallback": "https://syntrends-testnet.fly.dev",
     "owners": "https://testnet.syntrends.com/owners/",
     "status": "https://testnet.syntrends.com/status/",
-    "explorer": "https://testnet.syntrends.com/explorer/",
+    "explorer": "https://explorer.syntrends.com",
+    "explorer_path": "https://testnet.syntrends.com/explorer/",
     "join_on_app": "https://testnet.syntrends.com/join.html",
     "persona_webhook": "https://testnet.syntrends.com/owners/api/kyc/webhook",
     "agent_api_base": "https://testnet.syntrends.com",
     "well_known": "https://testnet.syntrends.com/.well-known/syntrends"
   },
-  "cors_origins_csv": "https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://syntrends-testnet.fly.dev",
+  "cors_origins_csv": "https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://explorer.syntrends.com,https://explorer.testnet.syntrends.com,https://syntrends-testnet.fly.dev",
   "fly_app": "syntrends-testnet",
   "packages": {
     "pypi": "syntrends",
@@ -25,6 +26,7 @@
     "version": "0.1.0"
   },
   "notes": [
+    "Official chain view: explorer.syntrends.com (same Fly app until mainnet). Path fallback: testnet.syntrends.com/explorer/.",
     "Phase N uses a single Fly origin behind testnet.syntrends.com (path-based owners/api).",
     "Hostname split (api.testnet.syntrends.com) remains the Docker+Caddy path in docs/TESTNET.md.",
     "Keep fly.dev as fallback until DNS/certs are verified.",

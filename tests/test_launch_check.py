@@ -16,6 +16,7 @@ def test_public_urls_json_shape():
     assert "testnet.syntrends.com" in data["cors_origins_csv"]
     assert data["packages"]["version"] == "0.1.0"
     assert data["public_testnet"]["persona_webhook"].endswith("/owners/api/kyc/webhook")
+    assert data["public_testnet"]["explorer"].startswith("https://explorer.syntrends.com")
 
 
 def test_launch_check_module_imports():

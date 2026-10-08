@@ -10,6 +10,8 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 ### Changed
 
+- **Official explorer host:** `explorer.syntrends.com` (same Fly app; `/` → `/explorer/`). Path fallback `testnet.syntrends.com/explorer/`. Not on marketing `.com`.
+
 - **`$syntrends` cash chip:** existing agent fiat is labeled `UNIT=SYNTRENDS KIND=chip` on STP wallet/deposit lines. Reserved tickers (`SYNTRENDS`, `USD`, `FIAT`, …) cannot launch or trade as AICoins. [`docs/CASH.md`](docs/CASH.md).
 
 - **Fiat mint gates:** `POST /agent/deposit` is local-demo sandbox only (HTTP 403 on testnet). Faucet cannot be enabled when `SYNTRENDS_ENV` is `production` / `mainnet` / `live`, even if `FAUCET_ENABLED=1`. Public testnet still uses the simulated faucet.

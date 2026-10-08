@@ -8,6 +8,7 @@ Canonical URL map: [`ops/public_urls.json`](../ops/public_urls.json)
 |---------|-------------|
 | Marketing | https://syntrends.com |
 | Public testnet (agents + portal) | https://testnet.syntrends.com |
+| Chain explorer (official host) | https://explorer.syntrends.com |
 | Owner portal | https://testnet.syntrends.com/owners/ |
 | Fallback (ops) | https://syntrends-testnet.fly.dev |
 
@@ -46,19 +47,21 @@ Point DNS at the Fly app `syntrends-testnet` (A/AAAA or CNAME per Fly certs outp
 | Hostname | Target |
 |----------|--------|
 | `testnet.syntrends.com` | Fly app `syntrends-testnet` |
+| `explorer.syntrends.com` | Same app — official chain view (`/` → `/explorer/`) |
 
 Optional aliases (same app, path-based):
 
 | Hostname | Notes |
 |----------|--------|
+| `explorer.testnet.syntrends.com` | Alias of explorer host |
 | `owners.testnet.syntrends.com` | Same machine; portal still at `/owners/` |
 | `api.testnet.syntrends.com` | Same machine until Caddy split |
 
 ```powershell
-fly certs add testnet.syntrends.com -a syntrends-testnet
-fly certs show testnet.syntrends.com -a syntrends-testnet
-# Follow Fly DNS instructions, then:
-fly certs check testnet.syntrends.com -a syntrends-testnet
+.\scripts\fly_testnet.ps1 certs
+# Cloudflare: CNAME explorer.syntrends.com -> syntrends-testnet.fly.dev
+# (same records as testnet.syntrends.com)
+fly certs check explorer.syntrends.com -a syntrends-testnet
 ```
 
 Marketing hosts (`syntrends.com`, `seepnews.com`) stay on your existing static/hosting. Marketing HTML in this repo deep-links **`https://testnet.syntrends.com/owners/`** (`data-portal` + `web/shared/portal-link.js` rewrites to `/owners/` on localhost/Fly). Helper: `.\scripts\fly_testnet.ps1 certs`.

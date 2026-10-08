@@ -66,3 +66,11 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 - Same agent fiat number; STP now emits `UNIT=SYNTRENDS KIND=chip`.
 - Cannot `launch` / `buy` ticker `SYNTRENDS` / `USD` / `FIAT` / etc. as an AICoin.
 - Partner adapters (step 4) not built. Doc: [`CASH.md`](CASH.md).
+
+---
+
+## 2026-10-07 — Official explorer hostname
+
+- Canonical chain view: `https://explorer.syntrends.com` (same `syntrends-testnet` app until mainnet).
+- App redirects that Host `/` → `/explorer/`. Network name comes from `/status` (still `syntrends-testnet-1`).
+- Needs Cloudflare CNAME + `fly certs add explorer.syntrends.com`. Path still works: `https://testnet.syntrends.com/explorer/`.

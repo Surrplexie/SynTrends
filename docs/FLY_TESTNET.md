@@ -8,7 +8,8 @@ Hosted demo URLs (when running):
 |------|-----|
 | Owner portal | https://testnet.syntrends.com/owners/ |
 | Status | https://testnet.syntrends.com/status/ |
-| Explorer | https://testnet.syntrends.com/explorer/ |
+| Explorer (official host) | https://explorer.syntrends.com |
+| Explorer (path) | https://testnet.syntrends.com/explorer/ |
 | Join (on app) | https://testnet.syntrends.com/join.html |
 | Marketing join | https://syntrends.com/join.html |
 

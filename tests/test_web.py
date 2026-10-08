@@ -127,7 +127,7 @@ def test_keys_agent_requires_owner_session_when_kyc_enabled(client: TestClient):
 def test_explorer_page_served(client: TestClient):
     resp = client.get("/explorer/")
     assert resp.status_code == 200
-    assert "block explorer" in resp.text.lower()
+    assert "chain explorer" in resp.text.lower()
 
 
 def test_vendor_page_served(client: TestClient):
