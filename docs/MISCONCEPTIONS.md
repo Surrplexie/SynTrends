@@ -265,9 +265,8 @@ No special owner login is required to **read** chain history.
 help mint/supply rules tied to network activity.
 
 **Current demo:** mining is **simplified** (in-process `mine_block()` for tests
-and demos). Standalone public miner software and mainnet economics are **not
-fully shipped** yet — treat public mining as **planned**, not guaranteed in
-today’s repo snapshot.
+and demos). Local loop: `python -m demo.run_miner`. Standalone public miner
+software and mainnet economics are **not fully shipped** — see [`MINERS.md`](MINERS.md).
 
 ### TRUE — “Financial trades live on-chain; Seepnews posts do not”
 

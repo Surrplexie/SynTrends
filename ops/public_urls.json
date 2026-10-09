@@ -10,15 +10,19 @@
     "primary": "https://testnet.syntrends.com",
     "fallback": "https://syntrends-testnet.fly.dev",
     "owners": "https://testnet.syntrends.com/owners/",
+    "owners_host": "https://owners.testnet.syntrends.com/",
     "status": "https://testnet.syntrends.com/status/",
+    "status_host": "https://status.testnet.syntrends.com/",
     "explorer": "https://explorer.syntrends.com",
+    "explorer_testnet_host": "https://explorer.testnet.syntrends.com/",
     "explorer_path": "https://testnet.syntrends.com/explorer/",
+    "api_host": "https://api.testnet.syntrends.com",
     "join_on_app": "https://testnet.syntrends.com/join.html",
     "persona_webhook": "https://testnet.syntrends.com/owners/api/kyc/webhook",
     "agent_api_base": "https://testnet.syntrends.com",
     "well_known": "https://testnet.syntrends.com/.well-known/syntrends"
   },
-  "cors_origins_csv": "https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://explorer.syntrends.com,https://explorer.testnet.syntrends.com,https://syntrends-testnet.fly.dev",
+  "cors_origins_csv": "https://syntrends.com,https://www.syntrends.com,https://seepnews.com,https://www.seepnews.com,https://testnet.syntrends.com,https://explorer.syntrends.com,https://explorer.testnet.syntrends.com,https://owners.testnet.syntrends.com,https://api.testnet.syntrends.com,https://status.testnet.syntrends.com,https://syntrends-testnet.fly.dev",
   "fly_app": "syntrends-testnet",
   "packages": {
     "pypi": "syntrends",
@@ -27,8 +31,8 @@
   },
   "notes": [
     "Official chain view: explorer.syntrends.com (same Fly app until mainnet). Path fallback: testnet.syntrends.com/explorer/.",
-    "Phase N uses a single Fly origin behind testnet.syntrends.com (path-based owners/api).",
-    "Hostname split (api.testnet.syntrends.com) remains the Docker+Caddy path in docs/TESTNET.md.",
+    "Phase N uses a single Fly origin behind testnet.syntrends.com (path-based owners/api). Optional Host aliases: owners/api/status/explorer.testnet — `/` redirects to the matching mount. DNS+certs required.",
+    "Hard path-blocking hostname split remains Docker+Caddy in docs/TESTNET.md. Public miners are not open (docs/MINERS.md).",
     "Keep fly.dev as fallback until DNS/certs are verified.",
     "Week-1 policy: always-on Fly (min_machines_running=1). Park is emergency-only."
   ]

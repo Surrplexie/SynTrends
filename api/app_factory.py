@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from .hostnames import is_explorer_host
+from .hostnames import root_redirect_for_host
 
 from . import agent_routes
 from .config import Settings
@@ -83,10 +83,12 @@ def create_app(
         )
 
         @app.middleware("http")
-        async def explorer_host_root(request: Request, call_next):
-            """explorer.syntrends.com / → /explorer/ (official chain view)."""
-            if is_explorer_host(request.headers.get("host")) and request.url.path in ("", "/"):
-                return RedirectResponse(url="/explorer/", status_code=307)
+        async def split_host_root(request: Request, call_next):
+            """explorer/owners/status/api hostnames: `/` → the matching mount."""
+            if request.url.path in ("", "/"):
+                dest = root_redirect_for_host(request.headers.get("host"))
+                if dest:
+                    return RedirectResponse(url=dest, status_code=307)
             return await call_next(request)
 
     app.include_router(agent_routes.router)

@@ -49,13 +49,16 @@ Point DNS at the Fly app `syntrends-testnet` (A/AAAA or CNAME per Fly certs outp
 | `testnet.syntrends.com` | Fly app `syntrends-testnet` |
 | `explorer.syntrends.com` | Same app — official chain view (`/` → `/explorer/`) |
 
-Optional aliases (same app, path-based):
+Optional aliases (same Fly app; `/` redirects to the matching mount once DNS+certs exist):
 
-| Hostname | Notes |
-|----------|--------|
-| `explorer.testnet.syntrends.com` | Alias of explorer host |
-| `owners.testnet.syntrends.com` | Same machine; portal still at `/owners/` |
-| `api.testnet.syntrends.com` | Same machine until Caddy split |
+| Hostname | `/` goes to |
+|----------|-------------|
+| `explorer.testnet.syntrends.com` | `/explorer/` |
+| `owners.testnet.syntrends.com` | `/owners/` |
+| `api.testnet.syntrends.com` | `/.well-known/syntrends` |
+| `status.testnet.syntrends.com` | `/status/` |
+
+Path URLs on `testnet.syntrends.com` keep working. Cloudflare: CNAME each name to `syntrends-testnet.fly.dev` (DNS only), then `fly certs add <host> -a syntrends-testnet`.
 
 ```powershell
 .\scripts\fly_testnet.ps1 certs

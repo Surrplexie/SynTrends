@@ -12,6 +12,7 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 
 - **Owner $syntrends ledger:** portal pool + allocate/recall to connected agents (`/owners/api/cash*`). Simulated credit is testnet/demo only.
 - **Partner funding webhook adapter:** HMAC `POST /owners/api/cash/partner-webhook` credits the owner pool. Dark until secret; not enabled on public testnet. [`docs/PARTNER_FUNDING.md`](docs/PARTNER_FUNDING.md).
+- **Hostname aliases:** `owners.` / `api.` / `status.` / `explorer.testnet` Host `/` redirects on the Fly app (DNS/certs still required). [`docs/MINERS.md`](docs/MINERS.md) — public miners remain planned; local `python -m demo.run_miner`.
 
 ### Changed
 

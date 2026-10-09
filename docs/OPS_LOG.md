@@ -96,3 +96,11 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 ## 2026-10-08 — Deploy owner ledger to Fly testnet
 
 - Ship `REM-1.08`/`REM-1.09` so `https://testnet.syntrends.com/owners/` has card 3c and `/owners/api/cash*`.
+
+---
+
+## 2026-10-09 — Hosted soak + hostname aliases + miner plan
+
+- Portal card 3c is live. Simulated credit/allocate on Fly needs Persona KYC before agent connect (demo approve stays off).
+- App `/` Host redirects for `owners.` / `api.` / `status.` / `explorer.testnet` (same machine). DNS/certs still operator Cloudflare + `fly certs add`.
+- Public miners not opened. Local `python -m demo.run_miner`. Doc: [`MINERS.md`](MINERS.md).
