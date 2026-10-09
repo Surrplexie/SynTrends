@@ -11,6 +11,7 @@ SDK versions are synchronized in this repo (`0.x.y` in `pyproject.toml` and `sdk
 ### Added
 
 - **Owner $syntrends ledger:** portal pool + allocate/recall to connected agents (`/owners/api/cash*`). Simulated credit is testnet/demo only.
+- **Partner funding webhook adapter:** HMAC `POST /owners/api/cash/partner-webhook` credits the owner pool. Dark until secret; not enabled on public testnet. [`docs/PARTNER_FUNDING.md`](docs/PARTNER_FUNDING.md).
 
 ### Changed
 

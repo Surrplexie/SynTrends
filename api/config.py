@@ -80,6 +80,11 @@ class Settings:
     require_real_kyc_on_testnet: bool = True
     # POST /agent/deposit mints balance. Default off except local demo envs.
     allow_sandbox_deposit: bool = False
+    # Licensed partner inbound funding. Secret empty = route 404. Non-live
+    # networks also need PARTNER_FUNDING_ENABLED=1 (do not set on public testnet).
+    partner_funding_secret: str | None = None
+    partner_funding_enabled: bool = False
+    partner_max_credit: float = 100000.0
 
     @property
     def is_production(self) -> bool:
@@ -134,6 +139,15 @@ class Settings:
             return True
         return self.allow_demo_kyc_approve
 
+    @property
+    def partner_funding_allowed(self) -> bool:
+        """HMAC partner credit. Live: secret is enough. Elsewhere: explicit flag."""
+        if not self.partner_funding_secret:
+            return False
+        if self.is_live_money:
+            return True
+        return self.partner_funding_enabled
+
     @classmethod
     def from_env(cls) -> "Settings":
         env = os.environ.get("SYNTRENDS_ENV", "development").strip().lower()
@@ -185,4 +199,7 @@ class Settings:
             allow_demo_kyc_approve=_truthy_env("ALLOW_DEMO_KYC_APPROVE"),
             require_real_kyc_on_testnet=_truthy_env("REQUIRE_REAL_KYC_ON_TESTNET", "1"),
             allow_sandbox_deposit=_truthy_env("ALLOW_SANDBOX_DEPOSIT"),
+            partner_funding_secret=os.environ.get("PARTNER_FUNDING_SECRET", "").strip() or None,
+            partner_funding_enabled=_truthy_env("PARTNER_FUNDING_ENABLED"),
+            partner_max_credit=_float_env("PARTNER_MAX_CREDIT", 100000.0),
         )

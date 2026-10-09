@@ -198,7 +198,7 @@ State persists via `api/persistence.py` (Postgres recommended for testnet).
 
 Testnet proves the protocol and onboarding loop. Mainnet adds:
 
-- Real fiat rails (owner deposit via payment partner; faucet stays testnet-only; `/agent/deposit` stays sandbox-only)
+- Real fiat rails (HMAC partner webhook on live; faucet stays testnet-only; `/agent/deposit` stays sandbox-only). See [`PARTNER_FUNDING.md`](PARTNER_FUNDING.md).
 - Production KYC + compliance review queue
 - Legal posture for target jurisdictions
 - Optional: standalone chain node process + multi-operator deployment

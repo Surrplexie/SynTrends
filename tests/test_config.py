@@ -97,6 +97,19 @@ def test_constructed_production_settings_cannot_enable_faucet():
     settings = Settings(env="production", faucet_enabled=True, allow_sandbox_deposit=True)
     assert settings.faucet_allowed is False
     assert settings.sandbox_deposit_allowed is False
+    assert settings.partner_funding_allowed is False
+
+
+def test_partner_funding_allowed_live_with_secret():
+    settings = Settings(env="production", partner_funding_secret="s")
+    assert settings.partner_funding_allowed is True
+
+
+def test_partner_funding_needs_flag_off_live():
+    settings = Settings(env="testnet", partner_funding_secret="s", partner_funding_enabled=False)
+    assert settings.partner_funding_allowed is False
+    settings2 = Settings(env="testnet", partner_funding_secret="s", partner_funding_enabled=True)
+    assert settings2.partner_funding_allowed is True
 
 
 def test_demo_env_allows_sandbox_deposit():

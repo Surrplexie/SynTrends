@@ -45,6 +45,7 @@ from .config import Settings
 from .kyc_provider import KYCProvider, create_kyc_provider
 from .owner_cash import OwnerCashError, OwnerCashLedger
 from .owners import KYCError, Owner, OwnerError, OwnerRegistry
+from .partner_funding import PartnerFundingError, verify_partner_webhook
 from .persistence import Persistence
 from .seeprules import ATTESTATION_TEXT, SEEPRULES_VERSION, SeeprulesRegistry
 from .syntrendrules import SYNTRENDRULES_VERSION, SyntrendrulesRegistry
@@ -287,6 +288,7 @@ class SynTrendsAPIService:
             "display": "$syntrends",
             "owner_balance": round(self.owner_cash.balance(owner.owner_id), 8),
             "simulated_credit_enabled": self.owner_simulated_credit_allowed(),
+            "partner_funding_configured": self.settings.partner_funding_allowed,
             "credit_amount": self.settings.faucet_amount,
             "credit_cooldown_seconds": self.settings.faucet_cooldown_seconds,
             "agents": agents,
@@ -314,6 +316,40 @@ class SynTrendsAPIService:
             self.owner_cash.credit(owner.owner_id, amt, note="simulated")
             self.persist()
             return self.owner_cash_view(owner)
+
+    def apply_partner_funding(self, headers: dict[str, str], raw_body: bytes) -> dict:
+        secret = self.settings.partner_funding_secret
+        if not secret:
+            raise PartnerFundingError("partner funding is not configured", status_code=404)
+        if not self.settings.partner_funding_allowed:
+            raise PartnerFundingError(
+                "partner funding is off on this network; use simulated credit",
+                status_code=403,
+            )
+        event = verify_partner_webhook(secret, headers, raw_body)
+        if event.amount > self.settings.partner_max_credit + 1e-9:
+            raise PartnerFundingError(
+                f"amount exceeds partner max {self.settings.partner_max_credit:g}",
+                status_code=400,
+            )
+        try:
+            owner = self.owners.get_owner(event.owner_id)
+        except OwnerError as exc:
+            raise PartnerFundingError(str(exc), status_code=400) from exc
+        with self._lock:
+            entry, duplicate = self.owner_cash.apply_partner_credit(
+                owner.owner_id, event.amount, external_id=event.external_id
+            )
+            self.persist()
+            return {
+                "received": True,
+                "duplicate": duplicate,
+                "owner_id": owner.owner_id,
+                "amount": event.amount,
+                "external_id": event.external_id,
+                "entry_id": entry.entry_id,
+                "owner_balance": round(self.owner_cash.balance(owner.owner_id), 8),
+            }
 
     def owner_cash_allocate(self, owner: Owner, agent_id: str, amount: float) -> dict:
         agent_id = self._require_owner_agent(owner, agent_id)

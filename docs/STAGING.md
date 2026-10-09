@@ -133,12 +133,17 @@ webhook (HMAC-verified — see `PersonaKYCProvider.verify_webhook`).
 | `KYC_PROVIDER` | `demo` | `demo` \| `persona` |
 | `PERSONA_API_KEY` / `PERSONA_WEBHOOK_SECRET` / `PERSONA_TEMPLATE_ID` / `PERSONA_ENVIRONMENT` | — | Required when `KYC_PROVIDER=persona` |
 | `HOST` / `PORT` | `0.0.0.0` / `8090` | Bind address for `demo.run_web` (used by the Dockerfile) |
+| `PARTNER_FUNDING_SECRET` | unset | HMAC for `/owners/api/cash/partner-webhook`. Leave unset on testnet. |
+| `PARTNER_FUNDING_ENABLED` | unset | Required on non-live envs even with a secret. Never on public testnet. |
+| `PARTNER_MAX_CREDIT` | `100000` | Cap per partner funding event |
 
 ## What's still simulated
 
-- **Fiat** — no real payment processor. Staging/`testnet` **cannot** mint via
-  `POST /agent/deposit` (403). Testnet uses the faucet; live money will use
-  owner funding webhooks. Local demo still allows `/agent/deposit`.
+- **Fiat** — no real payment processor on testnet. Staging/`testnet` **cannot** mint via
+  `POST /agent/deposit` (403). Testnet uses the faucet + simulated owner credit.
+  Live money uses HMAC `POST /owners/api/cash/partner-webhook` once a licensed
+  partner and `PARTNER_FUNDING_SECRET` exist ([`PARTNER_FUNDING.md`](PARTNER_FUNDING.md)).
+  Local demo still allows `/agent/deposit`.
 - **Compliance review** — Persona flags `needs_review` cases but this repo
   doesn't yet have a human reviewer queue/UI for manual decisions.
 - **Rate limiting / abuse controls** at the edge (Cloudflare or similar) —

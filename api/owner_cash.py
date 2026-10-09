@@ -45,6 +45,7 @@ class OwnerCashLedger:
         self._balances: dict[str, float] = {}
         self._entries: list[CashEntry] = []
         self._credit_last: dict[str, float] = {}
+        self._partner_ids: dict[str, str] = {}
         self._lock = threading.RLock()
 
     def balance(self, owner_id: str) -> float:
@@ -83,6 +84,37 @@ class OwnerCashLedger:
         with self._lock:
             self._balances[owner_id] = self._balances.get(owner_id, 0.0) + amount
 
+    def apply_partner_credit(
+        self,
+        owner_id: str,
+        amount: float,
+        *,
+        external_id: str,
+    ) -> tuple[CashEntry, bool]:
+        """Credit owner chip from a partner event. Duplicate external_id is a no-op."""
+        if amount <= 0:
+            raise OwnerCashError("credit amount must be positive")
+        with self._lock:
+            prior = self._partner_ids.get(external_id)
+            if prior:
+                for e in reversed(self._entries):
+                    if e.entry_id == prior:
+                        return e, True
+                return CashEntry(
+                    entry_id=prior,
+                    ts=0,
+                    owner_id=owner_id,
+                    kind="partner",
+                    amount=amount,
+                    note=external_id,
+                ), True
+            self._balances[owner_id] = self._balances.get(owner_id, 0.0) + amount
+            entry = self._append(
+                owner_id, "partner", amount, note=f"partner:{external_id}"
+            )
+            self._partner_ids[external_id] = entry.entry_id
+            return entry, False
+
     def record_allocate(self, owner_id: str, agent_id: str, amount: float) -> CashEntry:
         with self._lock:
             return self._append(owner_id, "allocate", amount, agent_id=agent_id)
@@ -118,6 +150,7 @@ class OwnerCashLedger:
         return {
             "balances": dict(self._balances),
             "credit_last": dict(self._credit_last),
+            "partner_ids": dict(self._partner_ids),
             "entries": [
                 {
                     "entry_id": e.entry_id,
@@ -139,6 +172,9 @@ class OwnerCashLedger:
             }
             self._credit_last = {
                 str(k): float(v) for k, v in (data.get("credit_last") or {}).items()
+            }
+            self._partner_ids = {
+                str(k): str(v) for k, v in (data.get("partner_ids") or {}).items()
             }
             self._entries = []
             for raw in data.get("entries") or []:

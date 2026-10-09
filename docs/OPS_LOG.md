@@ -82,4 +82,17 @@ Leave Fly always-on (`min_machines_running=1`). Watch Actions (uptime / launch_c
 - Owner portal card **3c** and `GET/POST /owners/api/cash`, `/cash/credit`, `/cash/allocate`, `/cash/recall`.
 - Simulated owner credit only when faucet or sandbox deposit is allowed (testnet/demo). Production/mainnet/live → **403**.
 - Allocate/recall always for linked agents: owner pool ↔ agent `FIAT` chip. Does not mint AICoins.
-- Agent faucet left in place for e2e. Partner webhooks still not built. Not deployed until asked.
+- Agent faucet left in place for e2e.
+
+---
+
+## 2026-10-08 — Partner funding adapter (not live money)
+
+- `POST /owners/api/cash/partner-webhook` HMAC `funding.credited` → owner chip. 404 with no secret. Testnet stays simulated credit (do not set `PARTNER_FUNDING_SECRET` on Fly testnet).
+- Licensed processor, MSB, and payout-to-card are still counsel + partner. Doc: [`PARTNER_FUNDING.md`](PARTNER_FUNDING.md).
+
+---
+
+## 2026-10-08 — Deploy owner ledger to Fly testnet
+
+- Ship `REM-1.08`/`REM-1.09` so `https://testnet.syntrends.com/owners/` has card 3c and `/owners/api/cash*`.

@@ -13,6 +13,7 @@ from .agent_routes import get_owner_session, get_service
 from .kyc_provider import KYCProviderError, WebhookVerificationError
 from .owner_cash import OwnerCashError
 from .owners import AGREEMENTS_VERSION, KYCError, KYCStatus, OwnerAuthError, OwnerError
+from .partner_funding import PartnerFundingError
 from .tax import render_tax_csv
 from .syntrendrules import SYNTRENDRULES_VERSION, SyntrendrulesError
 
@@ -135,6 +136,7 @@ def portal_config():
         "demo_admin_approve_enabled": demo_approve,
         "faucet_enabled": svc.settings.faucet_allowed,
         "owner_cash_credit_enabled": svc.owner_simulated_credit_allowed(),
+        "partner_funding_configured": svc.settings.partner_funding_allowed,
         "cash_unit": "SYNTRENDS",
         "testnet": svc.settings.is_testnet,
         "public_beta": svc.settings.is_testnet and not demo_approve,
@@ -351,6 +353,17 @@ def owner_cash_recall(body: OwnerCashMoveBody, authorization: Annotated[str | No
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
     except OwnerError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/cash/partner-webhook")
+async def owner_cash_partner_webhook(request: Request):
+    """Licensed partner callback. HMAC, no owner session. Dark until secret is set."""
+    svc = get_service()
+    raw_body = await request.body()
+    try:
+        return svc.apply_partner_funding(dict(request.headers), raw_body)
+    except PartnerFundingError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.post("/agents/connect")

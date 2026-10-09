@@ -138,7 +138,9 @@ function renderOwnerCash(view) {
     creditBtn.disabled = !view.simulated_credit_enabled;
     creditBtn.textContent = view.simulated_credit_enabled
       ? `Simulated credit (${view.credit_amount} $syntrends)`
-      : "Simulated credit (off on this network)";
+      : view.partner_funding_configured
+        ? "Simulated credit off — live chip comes from the funding partner"
+        : "Simulated credit (off on this network)";
   }
   const move = document.getElementById("owner-cash-move");
   const box = document.getElementById("owner-cash-agents");
